@@ -29,7 +29,7 @@ function Hafta1() {
         <ul>
           <li><Link to="/compose-mindset">1. Compose Mindset</Link></li>
           <li><Link to="/temel-ui-componentleri">2. Temel UI Componentleri</Link></li>
-          <li><Link to="/remembermutablestateof">3. State Management Temelleri</Link></li>
+          <li><Link to="/state-management-temelleri">3. State Management Temelleri</Link></li>
           <li><Link to="/paddingmarginsize">4. Modifier Sistemi</Link></li>
         </ul>
       </section>

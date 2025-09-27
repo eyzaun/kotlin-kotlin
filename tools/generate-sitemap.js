@@ -23,7 +23,7 @@ const routes = [
   // Temel UI Componentleri (tek sayfa)
   '/temel-ui-componentleri',
   // State Management Temelleri
-  '/remembermutablestateof','/statehoisting','/remembersaveable','/derivedstateof',
+  '/state-management-temelleri',
   // Modifier Sistemi
   '/paddingmarginsize','/backgroundborderclip','/clickableswipeable',
   // MVVM Pattern

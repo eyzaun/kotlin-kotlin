@@ -23,10 +23,7 @@ const ClassesObjects = React.lazy(() => import('./components/konular/classes-obj
 const CollectionsOperators = React.lazy(() => import('./components/konular/collections-operators/Index'));
 const ComposeMindset = React.lazy(() => import('./components/konular/compose-mindset/Index'));
 const TemelUI = React.lazy(() => import('./components/konular/temel-ui-componentleri/Index'));
-const RememberMutableStateOf = React.lazy(() => import('./components/konular/state-management-temelleri/RememberMutableStateOf'));
-const StateHoisting = React.lazy(() => import('./components/konular/state-management-temelleri/StateHoisting'));
-const RememberSaveable = React.lazy(() => import('./components/konular/state-management-temelleri/RememberSaveable'));
-const DerivedStateOf = React.lazy(() => import('./components/konular/state-management-temelleri/DerivedStateOf'));
+const StateManagement = React.lazy(() => import('./components/konular/state-management-temelleri/Index'));
 const PaddingMarginSize = React.lazy(() => import('./components/konular/modifier-sistemi/PaddingMarginSize'));
 const BackgroundBorderClip = React.lazy(() => import('./components/konular/modifier-sistemi/BackgroundBorderClip'));
 const ClickableSwipeable = React.lazy(() => import('./components/konular/modifier-sistemi/ClickableSwipeable'));
@@ -121,11 +118,8 @@ function App() {
           <Route path="/compose-mindset" element={<React.Suspense fallback={<div>Loading...</div>}><ComposeMindset /></React.Suspense>} />
           {/* Temel UI Componentleri (tek sayfa) */}
           <Route path="/temel-ui-componentleri" element={<React.Suspense fallback={<div>Loading...</div>}><TemelUI /></React.Suspense>} />
-          {/* State Management Temelleri */}
-          <Route path="/remembermutablestateof" element={<React.Suspense fallback={<div>Loading...</div>}><RememberMutableStateOf /></React.Suspense>} />
-          <Route path="/statehoisting" element={<React.Suspense fallback={<div>Loading...</div>}><StateHoisting /></React.Suspense>} />
-          <Route path="/remembersaveable" element={<React.Suspense fallback={<div>Loading...</div>}><RememberSaveable /></React.Suspense>} />
-          <Route path="/derivedstateof" element={<React.Suspense fallback={<div>Loading...</div>}><DerivedStateOf /></React.Suspense>} />
+          {/* State Management Temelleri (tek sayfa) */}
+          <Route path="/state-management-temelleri" element={<React.Suspense fallback={<div>Loading...</div>}><StateManagement /></React.Suspense>} />
           {/* Modifier Sistemi */}
           <Route path="/paddingmarginsize" element={<React.Suspense fallback={<div>Loading...</div>}><PaddingMarginSize /></React.Suspense>} />
           <Route path="/backgroundborderclip" element={<React.Suspense fallback={<div>Loading...</div>}><BackgroundBorderClip /></React.Suspense>} />
