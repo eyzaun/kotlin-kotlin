@@ -8,181 +8,287 @@ export default function StateManagementIndex() {
   return (
     <TopicLayout
       title="State Management Temelleri - Jetpack Compose"
-      description="Compose'da state nedir, remember/mutableStateOf, rememberSaveable, state hoisting, derivedStateOf ve performans ipuçları."
+    description="Compose'da state nedir, remember/mutableStateOf, rememberSaveable, state hoisting, derivedStateOf, Kotlin delegation ve en iyi pratikler."
       canonical="https://kotlin-kotlin.web.app/state-management-temelleri"
       backLink="/hafta1"
       topicPath="/state-management-temelleri"
     >
       <section className="section">
-        <h2>1. State Nedir? UI ile İlişkisi</h2>
-        <p>State, UI'ınızın nasıl görüneceğini belirleyen değişebilir veridir. Compose'da UI, state'in bir fonksiyonudur: UI = f(State). State değişirse ilgili UI otomatik olarak yeniden çizilir (recomposition).</p>
-        <ul>
-          <li>Single Source of Truth: State tek bir yerde tutulmalı</li>
-          <li>Unidirectional Data Flow: Veri yukarıdan aşağı akar, event'ler aşağıdan yukarı çıkar</li>
-          <li>İzole Bileşenler: State hoisting ile yeniden kullanılabilirlik</li>
-        </ul>
+    <h2>1. State Nedir ve Neden Kritik?</h2>
+    <p>State = Zaman içinde değişebilen ve UI’ı etkileyen veri. Örneğin bir sayaç uygulamasında ekrandaki sayı state’tir; butona her bastığınızda değişir ve UI otomatik güncellenir.</p>
+    <p>XML/View dünyasında bir değeri değiştirdikten sonra ilgili View’ı bulup her bir özelliği manuel güncellemeniz gerekir. Compose’da ise UI = f(State); state değişince ilgili UI otomatik recomposition ile yenilenir.</p>
       </section>
 
       <section className="section">
-        <h2>2. remember ve mutableStateOf</h2>
-        <p>Recomposition sırasında normal değişkenler sıfırlanır. <code>remember</code>, bu değeri kompozisyon ömrü boyunca hatırlar. <code>mutableStateOf</code> ile birlikte kullanıldığında reaktif UI akışı sağlar.</p>
+    <h2>2. remember ve mutableStateOf</h2>
+    <p>Compose’da state oluşturmanın temel yolu <code>remember</code> + <code>mutableStateOf</code> ikilisidir. <code>mutableStateOf</code> değişiklikleri Compose’a bildirir; <code>remember</code> ise recomposition sırasında değerin korunmasını sağlar.</p>
+    <div className="topic-card">
+      <CodeBlock language="kotlin">{`@Composable
+fun StateTemelOrnegi() {
+  // YANLIŞ KULLANIM - Çalışmaz!
+  var sayac1 = 0  // Normal değişken
+  Button(onClick = { sayac1++ }) {
+    Text("Sayaç: $sayac1")  // Her zaman 0 gösterir!
+  }
+  // NEDEN? Çünkü sayac1++ olduğunda Compose bunu bilmez, UI güncellemez
+    
+  // YANLIŞ KULLANIM 2 - Çalışmaz!
+  val sayac2 = mutableStateOf(0)  // remember yok!
+  Button(onClick = { sayac2.value++ }) {
+    Text("Sayaç: ${'${'}sayac2.value{'}'}")  // Her recomposition'da 0'a döner!
+  }
+  // NEDEN? Her recomposition'da yeni mutableStateOf(0) oluşur
+    
+  // DOĞRU KULLANIM
+  var sayac3 by remember { mutableStateOf(0) }
+  Button(onClick = { sayac3++ }) {
+    Text("Sayaç: $sayac3")  // Mükemmel çalışır!
+  }
+    
+  /*
+  Çalışma mantığı:
+  1) İlk composition'da mutableStateOf(0) oluşur ve remember ile saklanır
+  2) Butona tıklanınca sayac3++ olur
+  3) State değişimi Compose'a recomposition sinyali gönderir
+  4) Recomposition olur; remember sayesinde değer korunur
+  5) Yeni değerle UI güncellenir
+  */
+}
+`}</CodeBlock>
+    </div>
+      </section>
+
+    <section className="section">
+    <h2>3. Kotlin Delegation: by kullanımı</h2>
+    <p>State’e iki şekilde erişebilirsiniz: <code>.value</code> ile veya Kotlin’in <code>by</code> delegation özelliğiyle. <code>by</code> kullanımı daha okunaklıdır.</p>
+    <div className="topic-card">
+      <CodeBlock language="kotlin">{`@Composable
+fun DelegateOrnegi() {
+  // 1. YOL - .value kullanımı
+  val isim1 = remember { mutableStateOf("") }
+  TextField(
+    value = isim1.value,
+    onValueChange = { isim1.value = it }
+  )
+    
+  // 2. YOL - by delegate (önerilen)
+  var isim2 by remember { mutableStateOf("") }
+  TextField(
+    value = isim2,
+    onValueChange = { isim2 = it }
+  )
+}
+// Not: import androidx.compose.runtime.getValue
+//      import androidx.compose.runtime.setValue
+`}</CodeBlock>
+    </div>
+    </section>
+
+      <section className="section">
+    <h2>4. rememberSaveable: Config Change'e dayanıklı</h2>
+    <p><code>remember</code> recomposition’da hayatta kalır; <code>rememberSaveable</code> ise ekran döndürme gibi configuration değişikliklerinden sonra bile değeri geri yükler.</p>
+    <div className="topic-card">
+      <CodeBlock language="kotlin">{`@Composable
+fun RememberSaveableOrnegi() {
+  // remember - Ekran döndürülünce sıfırlanır
+  var geciciDeger by remember { mutableStateOf("") }
+    
+  // rememberSaveable - Ekran döndürülse bile korunur
+  var kaliciDeger by rememberSaveable { mutableStateOf("") }
+    
+  Column {
+    TextField(
+      value = geciciDeger,
+      onValueChange = { geciciDeger = it },
+      label = { Text("Dönünce silinir") }
+    )
+        
+    TextField(
+      value = kaliciDeger,
+      onValueChange = { kaliciDeger = it },
+      label = { Text("Dönünce kalır") }
+    )
+  }
+    
+  // Custom objeler için Saver
+  data class User(val id: Int, val name: String)
+    
+  var user by rememberSaveable(
+    stateSaver = Saver(
+      save = { user -> mapOf("id" to user.id, "name" to user.name) },
+      restore = { map -> User(map["id"] as Int, map["name"] as String) }
+    )
+  ) {
+    mutableStateOf(User(1, "Ali"))
+  }
+}
+`}</CodeBlock>
+    </div>
+      </section>
+
+      <section className="section">
+    <h2>5. State Hoisting - Çok önemli pattern</h2>
+    <p>State’i onu kullanan en düşük ortak parent’a taşıyın. Böylece tek doğruluk kaynağı oluşur, yeniden kullanım ve test kolaylaşır.</p>
         <div className="topic-card">
-          <CodeBlock language="kotlin">{`@Composable
-fun WrongCounter() {
-    var count = 0 // YANLIŞ: her recomposition'da 0 olur
-    Button(onClick = { count++ }) { Text("Sayı: $count") }
+      <CodeBlock language="kotlin">{`@Composable
+fun KotuCounter() {
+  var count by remember { mutableStateOf(0) }  // State içeride
+  Button(onClick = { count++ }) {
+    Text("Sayı: $count")
+  }
 }
 
 @Composable
-fun CorrectCounter() {
-    var count by remember { mutableStateOf(0) }
-    Button(onClick = { count++ }) { Text("Sayı: $count") }
+fun IyiCounter(
+  count: Int,
+  onIncrement: () -> Unit
+) {
+  Button(onClick = onIncrement) {
+    Text("Sayı: $count")
+  }
+}
+
+@Composable
+fun CounterEkrani() {
+  var count by remember { mutableStateOf(0) }
+    
+  Column {
+    IyiCounter(
+      count = count,
+      onIncrement = { count++ }
+    )
+    Text("Toplam tıklama: $count")
+    Button(
+      onClick = { count = 0 },
+      enabled = count > 0
+    ) { Text("Sıfırla") }
+  }
 }
 `}</CodeBlock>
         </div>
-        <div className="topic-card">
-          <h3>State Okuma ve Yazma</h3>
-          <CodeBlock language="kotlin">{`@Composable
-fun ToggleExample() {
-    var enabled by remember { mutableStateOf(false) }
+    <ul>
+      <li>State’i kullanan en düşük ortak parent’a taşı</li>
+      <li>State ve değiştirici fonksiyonları parametre olarak geçir</li>
+      <li>Child composable’ları olabildiğince stateless tut</li>
+    </ul>
+      </section>
+
+      <section className="section">
+    <h2>6. derivedStateOf - Hesaplanmış state</h2>
+    <p>Diğer state’lerden türetilen değerleri sadece bağımlılıklar değiştiğinde yeniden hesaplamak için kullanılır.</p>
+    <div className="topic-card">
+      <CodeBlock language="kotlin">{`@Composable
+fun DerivedStateOrnegi() {
+  var firstName by remember { mutableStateOf("") }
+  var lastName by remember { mutableStateOf("") }
+  val fullNameIyi by remember {
+    derivedStateOf { "$firstName $lastName" }
+  }
+    
+  var searchQuery by remember { mutableStateOf("") }
+  val userList = remember { getUserList() }
+  val filteredUsers by remember {
+    derivedStateOf {
+      if (searchQuery.isEmpty()) userList
+      else userList.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+  }
+    
+  var email by remember { mutableStateOf("") }
+  var password by remember { mutableStateOf("") }
+  var passwordConfirm by remember { mutableStateOf("") }
+  val isEmailValid by remember { derivedStateOf { email.contains("@") && email.contains(".") } }
+  val isPasswordValid by remember { derivedStateOf { password.length >= 8 } }
+  val doPasswordsMatch by remember { derivedStateOf { password == passwordConfirm && password.isNotEmpty() } }
+  val isFormValid by remember { derivedStateOf { isEmailValid && isPasswordValid && doPasswordsMatch } }
+    
+  Button(onClick = { /* Submit */ }, enabled = isFormValid) { Text("Kayıt Ol") }
+}
+`}</CodeBlock>
+    </div>
+      </section>
+
+      <section className="section">
+    <h2>7. State Best Practices</h2>
+    <ul>
+      <li>State’i mümkün olan en düşük seviyede tutun</li>
+      <li>Stateless composable tercih edin; state’i parent kontrol etsin</li>
+      <li>Immutable veri yapıları kullanın: <code>list = list + item</code> (doğru), <code>list.add(item)</code> (yanlış)</li>
+      <li>Lazy listelerde <code>key</code> kullanın: <code>items(list, key = {'{'} it.id {'}'})</code></li>
+      <li>Hesaplanabilir değerler için gereksiz state tutmayın; <code>derivedStateOf</code> kullanın</li>
+      <li>Business logic’i composable dışına taşıyın (ViewModel / UseCase)</li>
+    </ul>
+      </section>
+
+      <section className="section">
+    <h2>8. Gerçek Örnek: Login Form State Yönetimi</h2>
+    <div className="topic-card">
+      <CodeBlock language="kotlin">{`@Composable
+fun LoginFormExample() {
+  // Tüm state'ler
+  var username by rememberSaveable { mutableStateOf("") }
+  var password by rememberSaveable { mutableStateOf("") }
+  var rememberMe by rememberSaveable { mutableStateOf(false) }
+  var isLoading by remember { mutableStateOf(false) }
+  var errorMessage by remember { mutableStateOf<String?>(null) }
+    
+  // Derived states - validasyon
+  val isUsernameValid by remember { derivedStateOf { username.length >= 3 } }
+  val isPasswordValid by remember { derivedStateOf { password.length >= 6 } }
+  val canSubmit by remember { derivedStateOf { isUsernameValid && isPasswordValid && !isLoading } }
+    
+  Column(modifier = Modifier.padding(16.dp)) {
+    OutlinedTextField(
+      value = username,
+      onValueChange = {
+        username = it
+        errorMessage = null
+      },
+      label = { Text("Kullanıcı Adı") },
+      isError = username.isNotEmpty() && !isUsernameValid,
+      supportingText = {
+        if (username.isNotEmpty() && !isUsernameValid) {
+          Text("En az 3 karakter olmalı")
+        }
+      }
+    )
+        
+    OutlinedTextField(
+      value = password,
+      onValueChange = { password = it },
+      label = { Text("Şifre") },
+      visualTransformation = PasswordVisualTransformation(),
+      isError = password.isNotEmpty() && !isPasswordValid
+    )
+        
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Switch(checked = enabled, onCheckedChange = { enabled = it })
-        Spacer(Modifier.width(8.dp))
-        Text(if (enabled) "Açık" else "Kapalı")
+      Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
+      Text("Beni hatırla")
     }
+        
+    errorMessage?.let {
+      Text(
+        text = it,
+        color = MaterialTheme.colors.error,
+        modifier = Modifier.padding(vertical = 8.dp)
+      )
+    }
+        
+    Button(
+      onClick = { isLoading = true /* Login işlemi... */ },
+      enabled = canSubmit,
+      modifier = Modifier.fillMaxWidth()
+    ) {
+      if (isLoading) {
+        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+      } else {
+        Text("Giriş Yap")
+      }
+    }
+  }
 }
 `}</CodeBlock>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>3. rememberSaveable</h2>
-        <p><code>remember</code> değeri, composable composition'dan çıkınca veya process öldüğünde kaybolur. <code>rememberSaveable</code> ise ekran döndürme (configuration change) ve process recreation sonrası state'i geri getirir (serileştirilebilir tipler için).</p>
-        <div className="topic-card">
-          <CodeBlock language="kotlin">{`@Composable
-fun PersistentCounter() {
-    var count by rememberSaveable { mutableStateOf(0) }
-    Button(onClick = { count++ }) { Text("Sayı: $count") }
-}
-`}</CodeBlock>
-          <ul>
-            <li>Custom tipler için <code>Saver</code> yazabilirsiniz</li>
-            <li>NavBackStackEntry ile navigation kapsamına bağlı state kullanımı yaygındır</li>
-          </ul>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>4. State Hoisting</h2>
-        <p>State'i komponent dışına taşıyıp üst seviyede tutma tekniği. Tek doğruluk kaynağı sağlar, test edilebilirliği artırır ve yeniden kullanımı kolaylaştırır.</p>
-        <div className="topic-card">
-          <CodeBlock language="kotlin">{`@Composable
-fun BadTextField() {
-    var text by remember { mutableStateOf("") }
-    TextField(value = text, onValueChange = { text = it })
-}
-
-@Composable
-fun GoodTextField(value: String, onValueChange: (String) -> Unit) {
-    TextField(value = value, onValueChange = onValueChange)
-}
-
-@Composable
-fun FormScreen() {
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    Column {
-        GoodTextField(value = name, onValueChange = { name = it })
-        GoodTextField(value = email, onValueChange = { email = it })
-        Button(onClick = { /* submit */ }, enabled = name.isNotEmpty() && email.contains("@")) {
-            Text("Kaydet")
-        }
-    }
-}
-`}</CodeBlock>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>5. derivedStateOf</h2>
-        <p>Başka state'lerden türetilen hesaplanmış değerleri performanslı şekilde üretir. Yalnızca bağımlılıklar değiştiğinde yeniden hesaplanır.</p>
-        <div className="topic-card">
-          <CodeBlock language="kotlin">{`@Composable
-fun SearchScreen(users: List<User>) {
-    var query by remember { mutableStateOf("") }
-    
-    val filtered by remember(query, users) {
-        derivedStateOf {
-            users.filter { it.name.contains(query, ignoreCase = true) }
-        }
-    }
-    
-    Column(Modifier.padding(16.dp)) {
-        OutlinedTextField(value = query, onValueChange = { query = it }, label = { Text("Ara") })
-        Spacer(Modifier.height(8.dp))
-        LazyColumn { items(filtered) { user -> Text(user.name) } }
-    }
-}
-`}</CodeBlock>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>6. Performans İpuçları</h2>
-        <ul>
-          <li>Heavy iş yüklerini composable içinde yapmayın; <code>remember</code> ile cache'leyin</li>
-          <li>Immutable veri yapıları ve stable parametreler kullanın</li>
-          <li>Listelerde <code>key</code> sağlayın ve item'ları küçük tutun</li>
-          <li>Composable'ları side-effect'siz tutun; side effect için uygun API'leri kullanın</li>
-        </ul>
-        <div className="topic-card">
-          <CodeBlock language="kotlin">{`@Stable
-data class User(val id: Int, val name: String)
-`}</CodeBlock>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>7. Mini Uygulama: Yapılacaklar</h2>
-        <p>State hoisting ve derivedStateOf kullanımını bir arada gösteren basit bir örnek.</p>
-        <div className="topic-card">
-          <CodeBlock language="kotlin">{`data class Todo(val id: Long, val title: String, val done: Boolean)
-
-@Composable
-fun TodoScreen() {
-    var items by rememberSaveable { mutableStateOf(listOf<Todo>()) }
-    var text by remember { mutableStateOf("") }
-    val remaining by remember(items) { derivedStateOf { items.count { !it.done } } }
-
-    Column(Modifier.padding(16.dp)) {
-        Row {
-            OutlinedTextField(value = text, onValueChange = { text = it }, modifier = Modifier.weight(1f))
-            Spacer(Modifier.width(8.dp))
-            Button(onClick = {
-                if (text.isNotBlank()) {
-                    items = items + Todo(id = System.currentTimeMillis(), title = text, done = false)
-                    text = ""
-                }
-            }) { Text("Ekle") }
-        }
-        Text("Kalan: ${'${'}remaining{'}'}")
-        Spacer(Modifier.height(8.dp))
-        LazyColumn { items(items, key = { it.id }) { todo -> TodoRow(todo) { updated ->
-            items = items.map { if (it.id == updated.id) updated else it }
-        } } }
-    }
-}
-
-@Composable
-fun TodoRow(todo: Todo, onToggle: (Todo) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Checkbox(checked = todo.done, onCheckedChange = { onToggle(todo.copy(done = it)) })
-        Spacer(Modifier.width(8.dp))
-        Text(if (todo.done) "✓ ${'${'}todo.title{'}'}" else todo.title)
-    }
-}
-`}</CodeBlock>
-        </div>
+    </div>
       </section>
 
       <Notes topicPath="/state-management-temelleri" topicTitle="State Management Temelleri" />
