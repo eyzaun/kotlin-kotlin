@@ -86,6 +86,7 @@ const DeleteEditActions = React.lazy(() => import('./components/konular/swipe-ac
 const SearchHistory = React.lazy(() => import('./components/konular/search-functionality/SearchHistory'));
 const DebounceThrottle = React.lazy(() => import('./components/konular/search-functionality/DebounceThrottle'));
 const FilteringGrouping = React.lazy(() => import('./components/konular/search-functionality/FilteringGrouping'));
+const SoruCevap1 = React.lazy(() => import('./components/sorucevap/SoruCevap1'));
 
 function App() {
   return (
@@ -201,6 +202,8 @@ function App() {
           <Route path="/searchhistory" element={<React.Suspense fallback={<div>Loading...</div>}><SearchHistory /></React.Suspense>} />
           <Route path="/debouncethrottle" element={<React.Suspense fallback={<div>Loading...</div>}><DebounceThrottle /></React.Suspense>} />
           <Route path="/filteringgrouping" element={<React.Suspense fallback={<div>Loading...</div>}><FilteringGrouping /></React.Suspense>} />
+          {/* Soru-Cevap */}
+          <Route path="/soru-cevap-1" element={<React.Suspense fallback={<div>Loading...</div>}><SoruCevap1 /></React.Suspense>} />
         </Routes>
         </Router>
             </DesignLanguageProvider>

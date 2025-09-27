@@ -24,6 +24,8 @@ const routes = [
   '/temel-ui-componentleri',
   // State Management Temelleri
   '/state-management-temelleri',
+   // Soru-Cevap sayfaları
+   '/soru-cevap-1',
   // Modifier Sistemi
   '/paddingmarginsize','/backgroundborderclip','/clickableswipeable',
   // MVVM Pattern

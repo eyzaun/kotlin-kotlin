@@ -25,6 +25,7 @@ function Hafta1() {
       </section>
 
       <section>
+          <li><Link to="/soru-cevap-1">Soru-Cevap 1</Link></li>
         <h2>B. Jetpack Compose Temelleri</h2>
         <ul>
           <li><Link to="/compose-mindset">1. Compose Mindset</Link></li>
