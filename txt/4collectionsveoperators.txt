@@ -1,0 +1,350 @@
+// ==================== COLLECTIONS VE OPERATORS - DETAYLI ANLATIM ====================
+
+/*
+====================================
+COLLECTIONS NEDİR VE NEDEN ÖNEMLİDİR?
+====================================
+
+Collections (Koleksiyonlar) birden fazla veriyi bir arada tutan yapılardır.
+Örneğin: kullanıcı listesi, ürün listesi, mesaj listesi gibi.
+
+Android'de HER YERDE kullanırsınız:
+- RecyclerView/LazyColumn için veri listeleri
+- API'den gelen array response'ları
+- Spinner/Dropdown için seçenekler
+- Cache'lenecek veriler
+
+Kotlin'de 3 ana collection tipi var:
+1. List - Sıralı, index'li, duplicate olabilir
+2. Set - Sırasız, unique elemanlar (duplicate yok)
+3. Map - Key-Value çiftleri (Dictionary)
+*/
+
+/*
+====================================
+LIST - EN ÇOK KULLANILAN
+====================================
+
+List iki türlü olabilir:
+- List (Immutable/Read-only) - Değiştirilemez
+- MutableList - Değiştirilebilir
+
+Android'de çoğunlukla List kullanırız, state değişince yeni liste oluştururuz.
+Bu sayede recomposition doğru çalışır.
+*/
+
+fun listOrnekleri() {
+    // IMMUTABLE LIST - Değiştirilemez
+    val sehirler = listOf("İstanbul", "Ankara", "İzmir")
+    // sehirler.add("Bursa")  // HATA! add metodu yok
+    println(sehirler[0])  // İstanbul - index ile erişim
+    println(sehirler.size)  // 3 - eleman sayısı
+    
+    // MUTABLE LIST - Değiştirilebilir
+    val takimlar = mutableListOf("Galatasaray", "Fenerbahçe", "Beşiktaş")
+    takimlar.add("Trabzonspor")  // Ekleme yapabiliyoruz
+    takimlar.removeAt(0)  // İlk elemanı sil
+    takimlar[0] = "BJK"  // Index ile değiştirme
+    
+    // BOŞ LİSTE OLUŞTURMA
+    val bosListe = emptyList<String>()  // Immutable boş liste
+    val bosMutable = mutableListOf<Int>()  // Mutable boş liste
+    
+    // TİP BELİRTME
+    val sayiListesi: List<Int> = listOf(1, 2, 3, 4, 5)
+    val isimListesi: MutableList<String> = mutableListOf()
+    
+    // ARRAYLIST - Java uyumluluğu için
+    val javaList = ArrayList<Double>()  // Java'daki ArrayList
+    val kotlinList = arrayListOf(1.0, 2.0, 3.0)  // Kotlin helper
+}
+
+/*
+====================================
+SET - UNIQUE ELEMANLAR
+====================================
+
+Set'ler duplicate elemana izin vermez.
+Örnek: Takip edilen kullanıcı ID'leri, favori ürünler, seçilen kategoriler
+*/
+
+fun setOrnekleri() {
+    // IMMUTABLE SET
+    val benzersizSayilar = setOf(1, 2, 3, 2, 1)  // Duplicate'ler otomatik silinir
+    println(benzersizSayilar)  // [1, 2, 3] - sadece unique'ler kaldı
+    
+    // MUTABLE SET
+    val takipEdilenler = mutableSetOf<Int>()  // Kullanıcı ID'leri
+    takipEdilenler.add(101)  // true - eklendi
+    takipEdilenler.add(102)  // true - eklendi
+    takipEdilenler.add(101)  // false - zaten var, eklenmedi
+    println(takipEdilenler.size)  // 2 - duplicate sayılmaz
+    
+    // SET'İN GÜCÜ - Hızlı contains kontrolü
+    val favoriUrunler = setOf(1001, 1002, 1003, 1004, 1005)
+    val urunFavoriMi = 1003 in favoriUrunler  // true - çok hızlı!
+    // List'te bu kontrol O(n), Set'te O(1) - performans farkı!
+}
+
+/*
+====================================
+MAP - KEY-VALUE PAIRS
+====================================
+
+Map'ler anahtar-değer çiftleri saklar.
+Örnek: Kullanıcı ID -> Kullanıcı Adı, Ürün Kodu -> Fiyat, Ayar Adı -> Değeri
+*/
+
+fun mapOrnekleri() {
+    // IMMUTABLE MAP
+    val ulkeBaskentleri = mapOf(
+        "Türkiye" to "Ankara",
+        "Fransa" to "Paris",
+        "Almanya" to "Berlin"
+    )
+    println(ulkeBaskentleri["Türkiye"])  // Ankara
+    
+    // MUTABLE MAP
+    val urunFiyatlari = mutableMapOf<String, Double>()
+    urunFiyatlari["URUN001"] = 150.0
+    urunFiyatlari["URUN002"] = 250.0
+    urunFiyatlari.put("URUN003", 350.0)  // Alternatif ekleme
+    
+    // DEFAULT DEĞER İLE ALMA
+    val fiyat = urunFiyatlari.getOrDefault("URUN999", 0.0)  // 0.0 döner
+    
+    // KEY-VALUE İTERASYONU
+    for ((kod, fiyat) in urunFiyatlari) {
+        println("Ürün: $kod, Fiyat: $fiyat TL")
+    }
+    
+    // HASHMAP - Performans için
+    val cache = HashMap<String, String>()  // Java HashMap
+    val settings = hashMapOf(  // Kotlin helper
+        "tema" to "dark",
+        "dil" to "TR"
+    )
+}
+
+/*
+====================================
+COLLECTION OPERATORS - KOTLIN'İN GÜCÜ!
+====================================
+
+Kotlin'in collection operator'leri işleri inanılmaz kolaylaştırır.
+Java'da 10 satırda yazacağınız kodu 1 satırda yazarsınız.
+
+En çok kullanılanlar:
+- filter: Filtreleme
+- map: Dönüştürme
+- forEach: Döngü
+- find/firstOrNull: Arama
+- any/all/none: Kontrol
+- sortedBy: Sıralama
+- groupBy: Gruplama
+*/
+
+data class Urun(
+    val id: Int,
+    val ad: String,
+    val fiyat: Double,
+    val kategori: String,
+    val stokMiktari: Int
+)
+
+fun operatorOrnekleri() {
+    val urunler = listOf(
+        Urun(1, "Laptop", 15000.0, "Elektronik", 5),
+        Urun(2, "Mouse", 150.0, "Elektronik", 50),
+        Urun(3, "Klavye", 500.0, "Elektronik", 0),
+        Urun(4, "Masa", 2000.0, "Mobilya", 10),
+        Urun(5, "Sandalye", 800.0, "Mobilya", 25),
+        Urun(6, "Monitor", 3000.0, "Elektronik", 8)
+    )
+    
+    // FILTER - Koşula uyanları filtrele
+    // 2000 TL'den ucuz ürünler
+    val ucuzUrunler = urunler.filter { it.fiyat < 2000 }
+    println("Ucuz ürün sayısı: ${ucuzUrunler.size}")
+    
+    // Stokta olan elektronik ürünler
+    val stoktakiElektronik = urunler.filter { 
+        it.kategori == "Elektronik" && it.stokMiktari > 0 
+    }
+    
+    // MAP - Her elemanı dönüştür
+    // Sadece isimleri al
+    val urunIsimleri: List<String> = urunler.map { it.ad }
+    println(urunIsimleri)  // [Laptop, Mouse, Klavye, ...]
+    
+    // Fiyatlara %18 KDV ekle
+    val kdvliFiyatlar = urunler.map { it.fiyat * 1.18 }
+    
+    // Data class'ı başka data class'a dönüştür
+    data class UrunOzet(val ad: String, val fiyat: Double)
+    val ozetler = urunler.map { 
+        UrunOzet(it.ad, it.fiyat) 
+    }
+    
+    // FILTER + MAP ZİNCİRLEME - Çok güçlü!
+    // Elektronik ürünlerin isimlerini büyük harfle al
+    val elektronikIsimler = urunler
+        .filter { it.kategori == "Elektronik" }
+        .map { it.ad.uppercase() }
+        .sorted()  // Alfabetik sırala
+    
+    // FOREACH - Her eleman için işlem yap (döngü)
+    urunler.forEach { urun ->
+        println("${urun.ad}: ${urun.fiyat} TL")
+    }
+    
+    // forEachIndexed - Index'li döngü
+    urunler.forEachIndexed { index, urun ->
+        println("${index + 1}. ${urun.ad}")
+    }
+    
+    // FIND / FIRSTORNULL - İlk eşleşeni bul
+    val laptop = urunler.find { it.ad == "Laptop" }  // Urun nesnesi döner
+    val yokUrun = urunler.find { it.ad == "Tablet" }  // null döner
+    
+    // firstOrNull güvenli kullanım
+    val ilkMobilya = urunler.firstOrNull { it.kategori == "Mobilya" }
+    ilkMobilya?.let {
+        println("İlk mobilya: ${it.ad}")
+    }
+    
+    // ANY / ALL / NONE - Boolean kontroller
+    val pahalıUrunVarMi = urunler.any { it.fiyat > 10000 }  // true
+    val hepsiStoktaMi = urunler.all { it.stokMiktari > 0 }  // false  
+    val hicMobilyaYokMu = urunler.none { it.kategori == "Mobilya" }  // false
+    
+    // SORTEDBY / SORTEDBY DESCENDING - Sıralama
+    val fiyataGoreSirali = urunler.sortedBy { it.fiyat }  // Ucuzdan pahalıya
+    val pahalidanUcuza = urunler.sortedByDescending { it.fiyat }
+    
+    // Çoklu sıralama
+    val cokluSiralama = urunler
+        .sortedWith(compareBy({ it.kategori }, { it.fiyat }))
+    // Önce kategoriye göre, sonra fiyata göre sıralar
+    
+    // GROUPBY - Gruplama (Çok önemli!)
+    val kategoriyeGore = urunler.groupBy { it.kategori }
+    // Map<String, List<Urun>> döner
+    // {
+    //   "Elektronik" -> [Laptop, Mouse, Klavye, Monitor],
+    //   "Mobilya" -> [Masa, Sandalye]
+    // }
+    
+    kategoriyeGore.forEach { (kategori, urunListesi) ->
+        println("$kategori kategorisinde ${urunListesi.size} ürün var")
+    }
+    
+    // PARTITION - İkiye ayırma
+    val (stoktakiler, stokBitenler) = urunler.partition { it.stokMiktari > 0 }
+    println("Stokta: ${stoktakiler.size}, Bitmiş: ${stokBitenler.size}")
+    
+    // TAKE / DROP - İlk/Son N eleman
+    val ilkUc = urunler.take(3)  // İlk 3 ürün
+    val sonIki = urunler.takeLast(2)  // Son 2 ürün
+    val ilkUcHaric = urunler.drop(3)  // İlk 3'ü atla, gerisini al
+    
+    // DISTINCT / DISTINCTBY - Unique yapma
+    val kategoriler = urunler.map { it.kategori }.distinct()
+    // ["Elektronik", "Mobilya"] - duplicate'ler gitti
+    
+    val benzersizFiyatlar = urunler.distinctBy { it.fiyat }
+    
+    // SUM / AVERAGE / MAX / MIN - Matematiksel işlemler
+    val toplamDeger = urunler.sumOf { it.fiyat * it.stokMiktari }
+    val ortalamafiyat = urunler.map { it.fiyat }.average()
+    val enPahali = urunler.maxByOrNull { it.fiyat }
+    val enUcuz = urunler.minByOrNull { it.fiyat }
+    
+    // REDUCE / FOLD - Accumulator pattern
+    val sayilar = listOf(1, 2, 3, 4, 5)
+    val toplam = sayilar.reduce { acc, sayi -> acc + sayi }  // 15
+    val carpim = sayilar.fold(1) { acc, sayi -> acc * sayi }  // 120
+}
+
+/*
+====================================
+GERÇEK ANDROID ÖRNEKLERİ
+====================================
+*/
+
+// API'DEN GELEN VERİYİ İŞLEME
+data class ApiUser(
+    val id: Int,
+    val name: String,
+    val email: String,
+    val isActive: Boolean,
+    val role: String
+)
+
+fun apiVeriIsleme(users: List<ApiUser>) {
+    // Sadece aktif kullanıcıları göster
+    val aktifKullanicilar = users.filter { it.isActive }
+    
+    // Admin'leri ayır
+    val (adminler, normalKullanicilar) = users.partition { it.role == "admin" }
+    
+    // İsimlere göre alfabetik sırala
+    val siraliListe = users.sortedBy { it.name }
+    
+    // Arama fonksiyonu
+    fun aramaYap(query: String): List<ApiUser> {
+        return users.filter {
+            it.name.contains(query, ignoreCase = true) ||
+            it.email.contains(query, ignoreCase = true)
+        }
+    }
+    
+    // ID'ye göre hızlı erişim için Map'e çevir
+    val userMap = users.associateBy { it.id }
+    val kullanici = userMap[123]  // O(1) performans
+}
+
+// RECYCLERVIEW/LAZYCOLUMN İÇİN VERİ HAZIRLAMA
+data class ListItem(
+    val id: Long,
+    val title: String,
+    val subtitle: String,
+    val date: Long,
+    val isRead: Boolean
+)
+
+fun listeHazirlama(items: List<ListItem>) {
+    // Okunmamışları üste al
+    val siraliListe = items.sortedByDescending { !it.isRead }
+    
+    // Tarihe göre grupla
+    val tarihGruplari = items.groupBy { 
+        // Timestamp'i güne çevir
+        java.text.SimpleDateFormat("dd/MM/yyyy").format(it.date)
+    }
+    
+    // Başlık harfine göre grupla (Contacts uygulaması gibi)
+    val harfGruplari = items
+        .sortedBy { it.title }
+        .groupBy { it.title.first().uppercase() }
+}
+
+/*
+====================================
+PERFORMANS İPUÇLARI
+====================================
+
+1. Sequence kullanın - Büyük listeler için
+   Normal: list.filter{}.map{}.take(10) - Tüm listeyi işler
+   Sequence: list.asSequence().filter{}.map{}.take(10) - Lazy, sadece 10 tane işler
+
+2. Set kullanın - Hızlı contains kontrolü için
+   List: O(n) - yavaş
+   Set: O(1) - çok hızlı
+
+3. Map kullanın - ID ile erişim için
+   list.find { it.id == x } - O(n)
+   map[x] - O(1)
+
+4. Immutable tercih edin - Thread safety ve state management için
+*/

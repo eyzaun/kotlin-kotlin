@@ -198,7 +198,7 @@ function AllNotes() {
         <SEO
           title="Notlarım - İki Ay"
           description="Kişisel notlarınızı görüntüleyin"
-          canonical="https://iki-ay.web.app/notlarim"
+          canonical="https://kotlin-kotlin.web.app/notlarim"
         />
         <div className="login-prompt">
           <h1>Notlarınızı görmek için giriş yapın</h1>
@@ -213,7 +213,7 @@ function AllNotes() {
       <SEO
         title="Notlarım - İki Ay"
         description="Kişisel notlarınızı görüntüleyin ve yönetin"
-        canonical="https://iki-ay.web.app/notlarim"
+        canonical="https://kotlin-kotlin.web.app/notlarim"
       />
 
       <div className="content-header">

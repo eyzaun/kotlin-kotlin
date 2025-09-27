@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 Sitemap: https://go-lang-learn.web.app/sitemap.xml
 Sitemap: https://go-lang-learn.web.app/sitemap-pages.xml
+

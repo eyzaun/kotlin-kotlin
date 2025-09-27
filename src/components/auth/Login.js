@@ -59,7 +59,7 @@ function Login() {
         <SEO
           title={isRegister ? "Kayıt Ol - İki Ay" : "Giriş Yap - İki Ay"}
           description={isRegister ? "İki Ay platformuna kayıt olun" : "İki Ay platformuna giriş yapın"}
-          canonical={`https://iki-ay.web.app/${isRegister ? 'kayit' : 'giris'}`}
+          canonical={`https://kotlin-kotlin.web.app/${isRegister ? 'kayit' : 'giris'}`}
         />
 
         <h1>{isRegister ? 'Kayıt Ol' : 'Giriş Yap'}</h1>

@@ -29,3 +29,4 @@ export function useDesignLanguage() {
   if (!ctx) throw new Error('useDesignLanguage must be used within DesignLanguageProvider');
   return ctx;
 }
+

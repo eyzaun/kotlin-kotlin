@@ -7,3 +7,4 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', () => {
   // Network-first; no caching to keep it simple
 });
+

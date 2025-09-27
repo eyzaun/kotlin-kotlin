@@ -21,7 +21,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // Ensure Storage uses a valid gs:// bucket to avoid CORS/wrong host
-const bucketFromEnv = firebaseConfig.storageBucket; // e.g., iki-ay.appspot.com
+const bucketFromEnv = firebaseConfig.storageBucket; // e.g., kotlin-kotlin.firebasestorage.app
 const inferredBucket = firebaseConfig.projectId ? `${firebaseConfig.projectId}.appspot.com` : undefined;
 const isValidBucket = (b) => typeof b === 'string' && /\.appspot\.com$/.test(b);
 const finalBucket = isValidBucket(bucketFromEnv) ? bucketFromEnv : inferredBucket;

@@ -1,0 +1,709 @@
+// ==================== TEMEL UI COMPONENTLERİ - DETAYLI ANLATIM ====================
+
+/*
+====================================
+COMPOSE'DA UI COMPONENT YAPISI
+====================================
+
+Compose'da her UI elementi bir Composable function'dır.
+XML'deki View'ların yerini Composable'lar almıştır:
+
+XML View -> Compose Composable
+TextView -> Text
+Button -> Button  
+EditText -> TextField
+LinearLayout -> Column/Row
+FrameLayout -> Box
+ScrollView -> Scrollable Column
+RecyclerView -> LazyColumn/LazyRow
+CardView -> Card
+*/
+
+/*
+====================================
+TEXT COMPOSABLE
+====================================
+
+Text, en temel UI componentidir. XML'deki TextView karşılığıdır.
+Ama çok daha güçlü ve esnek!
+*/
+
+@Composable
+fun TextOrnekleri() {
+    // En basit kullanım
+    Text("Merhaba Dünya")
+    
+    // Stil özellikleriyle
+    Text(
+        text = "Renkli ve Büyük Text",
+        color = Color.Red,                    // Renk
+        fontSize = 24.sp,                      // Font boyutu (sp = scalable pixels)
+        fontWeight = FontWeight.Bold,          // Kalınlık
+        fontStyle = FontStyle.Italic,          // İtalik
+        fontFamily = FontFamily.Cursive,       // Font ailesi
+        letterSpacing = 2.sp,                  // Harf aralığı
+        textDecoration = TextDecoration.Underline, // Alt çizgi
+        textAlign = TextAlign.Center,          // Hizalama
+        maxLines = 2,                          // Max satır sayısı
+        overflow = TextOverflow.Ellipsis       // Taşma durumunda ... göster
+    )
+    
+    // Material Typography kullanımı - ÖNEMLİ!
+    // Uygulamada tutarlı tipografi için Material stillerini kullanın
+    Text(
+        text = "Başlık",
+        style = MaterialTheme.typography.h4
+    )
+    
+    Text(
+        text = "Alt başlık",
+        style = MaterialTheme.typography.subtitle1
+    )
+    
+    Text(
+        text = "Gövde metni",
+        style = MaterialTheme.typography.body1
+    )
+    
+    // AnnotatedString - Farklı stillerde text parçaları
+    Text(
+        buildAnnotatedString {
+            withStyle(style = SpanStyle(color = Color.Blue)) {
+                append("Mavi ")
+            }
+            append("normal ")
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append("kalın ")
+            }
+            withStyle(
+                style = SpanStyle(
+                    fontSize = 20.sp,
+                    color = Color.Red
+                )
+            ) {
+                append("büyük kırmızı")
+            }
+        }
+    )
+    
+    // Tıklanabilir text
+    Text(
+        text = "Tıkla bana!",
+        modifier = Modifier.clickable { 
+            println("Text'e tıklandı")
+        }
+    )
+    
+    // Selectable (seçilebilir) text
+    SelectionContainer {
+        Text("Bu text seçilebilir ve kopyalanabilir")
+    }
+}
+
+/*
+====================================
+BUTTON COMPOSABLE
+====================================
+
+Button, kullanıcı etkileşimi için temel componenttir.
+Otomatik olarak Material Design'a uygun görünüm ve animasyonlar içerir.
+*/
+
+@Composable
+fun ButtonOrnekleri() {
+    // Basit button
+    Button(onClick = { println("Tıklandı") }) {
+        Text("Basit Buton")
+    }
+    
+    // İkon ve text içeren button
+    Button(
+        onClick = { /* TODO */ },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(
+            Icons.Default.ShoppingCart,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("Sepete Ekle")
+    }
+    
+    // Farklı button tipleri
+    
+    // 1. Filled Button (varsayılan)
+    Button(onClick = {}) {
+        Text("Filled Button")
+    }
+    
+    // 2. Outlined Button
+    OutlinedButton(onClick = {}) {
+        Text("Outlined Button")
+    }
+    
+    // 3. Text Button (borderless)
+    TextButton(onClick = {}) {
+        Text("Text Button")
+    }
+    
+    // 4. Icon Button
+    IconButton(onClick = {}) {
+        Icon(Icons.Default.Favorite, contentDescription = "Favori")
+    }
+    
+    // 5. Floating Action Button
+    FloatingActionButton(
+        onClick = {},
+        backgroundColor = MaterialTheme.colors.primary
+    ) {
+        Icon(Icons.Default.Add, contentDescription = "Ekle")
+    }
+    
+    // 6. Extended FAB
+    ExtendedFloatingActionButton(
+        text = { Text("Yeni Görev") },
+        icon = { Icon(Icons.Default.Add, contentDescription = null) },
+        onClick = {}
+    )
+    
+    // Button özelleştirmeleri
+    Button(
+        onClick = {},
+        enabled = false,  // Disabled state
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.Green,
+            contentColor = Color.White,
+            disabledBackgroundColor = Color.Gray,
+            disabledContentColor = Color.LightGray
+        ),
+        elevation = ButtonDefaults.elevation(
+            defaultElevation = 8.dp,
+            pressedElevation = 16.dp
+        ),
+        shape = RoundedCornerShape(16.dp),  // Köşe yuvarlama
+        border = BorderStroke(2.dp, Color.Black),  // Kenarlık
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+    ) {
+        Text("Özelleştirilmiş Buton")
+    }
+}
+
+/*
+====================================
+TEXTFIELD COMPOSABLE
+====================================
+
+TextField, kullanıcıdan text girişi almak için kullanılır.
+XML'deki EditText'in karşılığıdır ama çok daha güçlü!
+*/
+
+@Composable
+fun TextFieldOrnekleri() {
+    var text by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    
+    // Basit TextField
+    TextField(
+        value = text,
+        onValueChange = { text = it },
+        label = { Text("İsim") }
+    )
+    
+    // OutlinedTextField - Material Design outlined style
+    OutlinedTextField(
+        value = text,
+        onValueChange = { text = it },
+        label = { Text("Email") },
+        placeholder = { Text("ornek@email.com") },
+        leadingIcon = {
+            Icon(Icons.Default.Email, contentDescription = null)
+        },
+        trailingIcon = {
+            if (text.isNotEmpty()) {
+                IconButton(onClick = { text = "" }) {
+                    Icon(Icons.Default.Clear, contentDescription = "Temizle")
+                }
+            }
+        },
+        isError = !text.contains("@"),  // Hata durumu
+        singleLine = true,  // Tek satır
+        modifier = Modifier.fillMaxWidth()
+    )
+    
+    // Password TextField
+    var passwordVisible by remember { mutableStateOf(false) }
+    
+    OutlinedTextField(
+        value = password,
+        onValueChange = { password = it },
+        label = { Text("Şifre") },
+        visualTransformation = if (passwordVisible)
+            VisualTransformation.None
+        else
+            PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password
+        ),
+        trailingIcon = {
+            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                Icon(
+                    if (passwordVisible) Icons.Default.Visibility
+                    else Icons.Default.VisibilityOff,
+                    contentDescription = null
+                )
+            }
+        }
+    )
+    
+    // Telefon numarası TextField
+    OutlinedTextField(
+        value = phone,
+        onValueChange = { newValue ->
+            // Sadece rakam kabul et
+            if (newValue.all { it.isDigit() }) {
+                phone = newValue
+            }
+        },
+        label = { Text("Telefon") },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Phone,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { 
+                // Klavye Done'a basıldığında
+                println("Telefon: $phone")
+            }
+        ),
+        visualTransformation = PhoneVisualTransformation()  // Custom transformation
+    )
+}
+
+// Custom Visual Transformation örneği
+class PhoneVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        // 5551234567 -> (555) 123-4567 formatına çevir
+        val trimmed = text.text.take(10)
+        val out = StringBuilder()
+        
+        for (i in trimmed.indices) {
+            when (i) {
+                0 -> out.append("(")
+                3 -> out.append(") ")
+                6 -> out.append("-")
+            }
+            out.append(trimmed[i])
+        }
+        
+        return TransformedText(
+            AnnotatedString(out.toString()),
+            phoneNumberOffsetTranslator
+        )
+    }
+    
+    private val phoneNumberOffsetTranslator = object : OffsetMapping {
+        override fun originalToTransformed(offset: Int): Int = offset
+        override fun transformedToOriginal(offset: Int): Int = offset
+    }
+}
+
+/*
+====================================
+LAYOUT COMPOSABLES - COLUMN, ROW, BOX
+====================================
+
+Bunlar Compose'daki temel layout container'larıdır.
+XML'deki LinearLayout ve FrameLayout'un yerini alırlar.
+*/
+
+@Composable
+fun LayoutOrnekleri() {
+    // COLUMN - Dikey yerleşim (Vertical LinearLayout gibi)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,  // Dikey hizalama
+        horizontalAlignment = Alignment.CenterHorizontally  // Yatay hizalama
+    ) {
+        Text("Üst")
+        Text("Orta")
+        Text("Alt")
+    }
+    
+    // Arrangement seçenekleri:
+    // - Arrangement.Top: Üstte topla
+    // - Arrangement.Bottom: Altta topla
+    // - Arrangement.Center: Ortala
+    // - Arrangement.SpaceEvenly: Eşit boşluk bırak
+    // - Arrangement.SpaceBetween: Başta ve sonda boşluk bırakma
+    // - Arrangement.SpaceAround: Her elemanın etrafında eşit boşluk
+    
+    // ROW - Yatay yerleşim (Horizontal LinearLayout gibi)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("Sol")
+        Text("Orta")
+        Text("Sağ")
+    }
+    
+    // BOX - Üst üste yerleşim (FrameLayout gibi)
+    Box(
+        modifier = Modifier.size(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // İlk eklenen en altta
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize()
+        )
+        
+        // Üzerine yazı
+        Text(
+            "Üstteki Text",
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        
+        // Sağ üst köşeye ikon
+        Icon(
+            Icons.Default.Close,
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
+    }
+    
+    // İç içe layout örneği - Gerçek kullanım
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Başlık satırı
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Profil",
+                style = MaterialTheme.typography.h5
+            )
+            IconButton(onClick = {}) {
+                Icon(Icons.Default.Settings, contentDescription = "Ayarlar")
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Profil kartı
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = 4.dp
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Avatar
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray)
+                )
+                
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                // Bilgiler
+                Column {
+                    Text(
+                        "Kullanıcı Adı",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "kullanici@email.com",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+/*
+====================================
+LAZYCOLUMN ve LAZYROW - RECYCLERVIEW KARŞILIĞI
+====================================
+
+LazyColumn/LazyRow, büyük listeleri verimli şekilde gösterir.
+Sadece görünen elemanları render eder (RecyclerView gibi).
+*/
+
+@Composable
+fun LazyLayoutOrnekleri() {
+    data class User(val id: Int, val name: String, val email: String)
+    
+    val users = remember {
+        List(100) { index ->
+            User(
+                id = index,
+                name = "Kullanıcı $index",
+                email = "user$index@email.com"
+            )
+        }
+    }
+    
+    // LAZYCOLUMN - Dikey kaydırılabilir liste
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),  // İçerik padding
+        verticalArrangement = Arrangement.spacedBy(8.dp)  // Elemanlar arası boşluk
+    ) {
+        // Tek bir eleman ekle
+        item {
+            Text(
+                "Kullanıcı Listesi",
+                style = MaterialTheme.typography.h5
+            )
+        }
+        
+        // Liste elemanlarını ekle
+        items(
+            items = users,
+            key = { it.id }  // Performans için key önemli!
+        ) { user ->
+            UserCard(user = user)
+        }
+        
+        // Son eleman
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
+        }
+    }
+    
+    // LAZYROW - Yatay kaydırılabilir liste
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(10) { index ->
+            Card(
+                modifier = Modifier.size(120.dp, 160.dp),
+                elevation = 4.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("Kart $index")
+                }
+            }
+        }
+    }
+    
+    // Farklı item tipleri - Header, content, footer
+    LazyColumn {
+        // Sticky header
+        stickyHeader {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp)
+            ) {
+                Text("Sabit Başlık", fontWeight = FontWeight.Bold)
+            }
+        }
+        
+        // Gruplama örneği
+        val groupedUsers = users.groupBy { it.name.first() }
+        
+        groupedUsers.forEach { (letter, userList) ->
+            // Grup başlığı
+            item {
+                Text(
+                    letter.toString(),
+                    modifier = Modifier.padding(16.dp),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            
+            // Grup elemanları
+            items(userList) { user ->
+                UserListItem(user)
+            }
+        }
+    }
+    
+    // Pagination - Sayfalama örneği
+    val listState = rememberLazyListState()
+    
+    LazyColumn(state = listState) {
+        items(users) { user ->
+            UserCard(user)
+            
+            // Son elemana yaklaşınca daha fazla yükle
+            val lastIndex = users.lastIndex
+            if (users.indexOf(user) == lastIndex - 5) {
+                // Daha fazla veri yükle
+                LaunchedEffect(Unit) {
+                    // loadMoreUsers()
+                }
+            }
+        }
+        
+        // Loading indicator
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+    }
+}
+
+/*
+====================================
+CARD, SURFACE, SCAFFOLD
+====================================
+*/
+
+@Composable
+fun MaterialComponentOrnekleri() {
+    // CARD - Elevation'lı kart komponenti
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        elevation = 8.dp,
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = Color.White,
+        border = BorderStroke(1.dp, Color.Gray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Kart Başlığı", fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Kart içeriği buraya gelir")
+        }
+    }
+    
+    // SURFACE - Material yüzey
+    Surface(
+        modifier = Modifier.size(100.dp),
+        shape = CircleShape,
+        color = MaterialTheme.colors.primary,
+        elevation = 4.dp
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text("S", color = Color.White, fontSize = 32.sp)
+        }
+    }
+    
+    // SCAFFOLD - Uygulama iskeleti (Çok önemli!)
+    // TopBar, BottomBar, FAB, Drawer, SnackBar için
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Başlık") },
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.Menu, contentDescription = null)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.Search, contentDescription = null)
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.MoreVert, contentDescription = null)
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            BottomNavigation {
+                BottomNavigationItem(
+                    selected = true,
+                    onClick = {},
+                    icon = { Icon(Icons.Default.Home, null) },
+                    label = { Text("Ana Sayfa") }
+                )
+                BottomNavigationItem(
+                    selected = false,
+                    onClick = {},
+                    icon = { Icon(Icons.Default.Person, null) },
+                    label = { Text("Profil") }
+                )
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {}) {
+                Icon(Icons.Default.Add, contentDescription = "Ekle")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
+        drawerContent = {
+            // Yan menü içeriği
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Menü Öğesi 1")
+                Text("Menü Öğesi 2")
+            }
+        }
+    ) { paddingValues ->
+        // Ana içerik - paddingValues kullanmak önemli!
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            Text("Ana içerik buraya gelir")
+        }
+    }
+}
+
+@Composable
+fun UserCard(user: User) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Avatar placeholder
+            Surface(
+                modifier = Modifier.size(48.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colors.primary
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        user.name.first().toString(),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column {
+                Text(user.name, fontWeight = FontWeight.Bold)
+                Text(user.email, color = Color.Gray, fontSize = 14.sp)
+            }
+        }
+    }
+}

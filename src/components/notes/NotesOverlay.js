@@ -310,7 +310,8 @@ export default function NotesOverlay({ topicPath, topicTitle, open, onClose }) {
             await import('highlight.js/styles/github.css');
             break;
           case 'dracula':
-            await import('highlight.js/styles/dracula.css');
+            // Use a widely available dark theme instead of dracula to avoid missing css issue
+            await import('highlight.js/styles/atom-one-dark.css');
             break;
           case 'materialDark':
             await import('highlight.js/styles/monokai.css');
@@ -319,7 +320,7 @@ export default function NotesOverlay({ topicPath, topicTitle, open, onClose }) {
             await import('highlight.js/styles/atom-one-light.css');
             break;
           default:
-            await import('highlight.js/styles/atom-one-dark.css');
+            await import('highlight.js/styles/github.css');
             break;
         }
       } catch (e) {
@@ -439,3 +440,4 @@ export default function NotesOverlay({ topicPath, topicTitle, open, onClose }) {
     </div>
   );
 }
+

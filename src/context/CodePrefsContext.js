@@ -37,3 +37,4 @@ export const useCodePrefs = () => {
   if (!ctx) throw new Error('useCodePrefs must be used within CodePrefsProvider');
   return ctx;
 };
+

@@ -1,0 +1,417 @@
+// ==================== MÜLAKAT SORULARI VE CEVAPLARI ====================
+
+/*
+====================================
+1. KOTLIN SYNTAX TEMELLERİ SORULARI
+====================================
+*/
+
+/*
+SORU 1: var, val ve const val arasındaki farklar nedir?
+
+CEVAP:
+- var: Değiştirilebilir (mutable) değişken. Değeri sonradan değiştirilebilir.
+  var isim = "Ali"
+  isim = "Veli"  // Değiştirilebilir
+  
+- val: Değiştirilemez (immutable) değişken. Bir kere atandıktan sonra değiştirilemez.
+  val yas = 25
+  yas = 26  // HATA!
+  
+- const val: Compile-time sabiti. Sadece primitive tipler ve String için kullanılır.
+  Derleme zamanında değeri belli olmalı. Top-level veya companion object içinde tanımlanır.
+  
+  companion object {
+      const val API_KEY = "abc123"  // Derleme zamanında yerine konur
+  }
+
+NOT: val referansın kendisi değiştirilemez ama içeriği değişebilir:
+val liste = mutableListOf(1, 2)
+liste.add(3)  // Bu çalışır! Liste içeriği değişebilir
+*/
+
+/*
+SORU 2: Null safety nedir? ?. ?: !! operatörleri ne işe yarar?
+
+CEVAP:
+Kotlin null safety ile NullPointerException hatalarını önler.
+
+- ? (Nullable type): Bir değişkenin null olabileceğini belirtir
+  var isim: String? = null  // null olabilir
+  
+- ?. (Safe call): Null değilse çağır, null ise null döndür
+  val uzunluk = isim?.length  // isim null ise null döner
+  
+- ?: (Elvis operator): Sol taraf null ise sağdaki değeri kullan
+  val kesinIsim = isim ?: "Misafir"  // isim null ise "Misafir" kullan
+  
+- !! (Not-null assertion): "Bu kesinlikle null değil" demek. Tehlikeli!
+  val uzunluk = isim!!.length  // isim null ise crash!
+
+Örnek senaryo:
+fun kullaniciSelamla(ad: String?) {
+    val gosterilecekAd = ad?.uppercase() ?: "MİSAFİR"
+    println("Hoşgeldin $gosterilecekAd")
+}
+*/
+
+/*
+SORU 3: Type inference nedir? Ne zaman açık tip belirtmeliyiz?
+
+CEVAP:
+Type inference, Kotlin'in değişken tipini otomatik anlamasıdır.
+
+val sayi = 42          // Int olduğunu anlar
+val metin = "Merhaba"  // String olduğunu anlar
+val ondalik = 3.14     // Double olduğunu anlar
+
+Açık tip belirtme durumları:
+1. Boş koleksiyonlarda:
+   val liste: List<String> = emptyList()  // Tip belirtmek gerekli
+   
+2. Nullable tiplerde başlangıç değeri null ise:
+   val isim: String? = null
+   
+3. Üst tip kullanmak istediğimizde:
+   val herhangi: Any = "Metin"  // String yerine Any tipi
+   
+4. Platform tipleriyle çalışırken (Java interop):
+   val javaList: ArrayList<String> = ArrayList()
+*/
+
+/*
+====================================
+2. FONKSİYONLAR VE LAMBDA SORULARI
+====================================
+*/
+
+/*
+SORU 4: Extension function nedir? Neden kullanılır?
+
+CEVAP:
+Extension function, var olan bir class'a o class'ın koduna dokunmadan 
+yeni fonksiyonlar eklememizi sağlar.
+
+// String class'ına yeni fonksiyon ekleme
+fun String.ilkHarfBuyuk(): String {
+    return this.firstOrNull()?.uppercase() + this.drop(1).lowercase()
+}
+
+val isim = "kotlin".ilkHarfBuyuk()  // "Kotlin"
+
+Kullanım alanları:
+1. Utility fonksiyonları daha okunabilir yapmak
+2. Android View'lara özel fonksiyonlar eklemek
+3. Null-safe operasyonlar eklemek
+
+// Gerçek örnek - View visibility
+fun View.show() { visibility = View.VISIBLE }
+fun View.hide() { visibility = View.GONE }
+
+// Kullanımı
+button.hide()
+textView.show()
+*/
+
+/*
+SORU 5: Higher-order function nedir? Lambda ile farkı nedir?
+
+CEVAP:
+Higher-order function: Parametre olarak fonksiyon alan veya fonksiyon döndüren fonksiyon.
+Lambda: İsimsiz fonksiyon, {} içinde yazılır.
+
+// Higher-order function - parametre olarak fonksiyon alıyor
+fun hesapla(x: Int, y: Int, operation: (Int, Int) -> Int): Int {
+    return operation(x, y)
+}
+
+// Lambda expression - isimsiz fonksiyon
+val toplam = hesapla(5, 3) { a, b -> a + b }  // 8
+val carpim = hesapla(5, 3) { a, b -> a * b }  // 15
+
+Android örneği:
+button.setOnClickListener { view ->  // Lambda
+    // Click işlemleri
+}
+
+// setOnClickListener higher-order function, 
+// { } içindeki lambda expression
+*/
+
+/*
+SORU 6: Scope functions (let, apply, run, also, with) ne zaman kullanılır?
+
+CEVAP:
+Her birinin spesifik kullanım alanı var:
+
+- let: Null kontrolü ve dönüşüm
+  kullanici?.let { 
+      // null değilse çalışır
+      saveToDatabase(it)
+  }
+
+- apply: Nesne konfigürasyonu (this kullanır, nesneyi döndürür)
+  val textView = TextView(context).apply {
+      text = "Merhaba"
+      textSize = 16f
+      setTextColor(Color.BLACK)
+  }
+
+- run: Hesaplama ve sonuç döndürme (this kullanır)
+  val sonuc = kullanici.run {
+      "$name $surname"  // String döndürür
+  }
+
+- also: Yan etkiler, loglama (it kullanır, nesneyi döndürür)
+  return user.also {
+      Log.d("User", "Saving user: ${it.name}")
+  }
+
+- with: Nesne üzerinde birçok işlem (extension değil)
+  with(binding) {
+      textView.text = "Başlık"
+      button.isEnabled = true
+  }
+
+Özet: null check -> let, setup -> apply, compute -> run, side effect -> also
+*/
+
+/*
+====================================
+3. CLASSES VE OBJECTS SORULARI
+====================================
+*/
+
+/*
+SORU 7: Data class nedir? Normal class'tan farkı nedir?
+
+CEVAP:
+Data class veri tutmak için optimize edilmiş class'tır.
+"data" keyword'ü otomatik olarak şunları üretir:
+- equals() ve hashCode()
+- toString()
+- copy()
+- componentN()
+
+data class User(val id: Int, val name: String)
+
+val user1 = User(1, "Ali")
+val user2 = User(1, "Ali")
+
+// Normal class'ta: user1 == user2 -> false (referans karşılaştırması)
+// Data class'ta: user1 == user2 -> true (içerik karşılaştırması)
+
+// toString() otomatik
+println(user1)  // User(id=1, name=Ali)
+
+// copy() ile klonlama
+val user3 = user1.copy(name = "Veli")  // id aynı, isim farklı
+
+// Destructuring
+val (id, name) = user1
+
+Ne zaman kullanılır:
+- API response modelleri
+- Database entity'leri  
+- RecyclerView item'ları
+- State/Event modelleri
+*/
+
+/*
+SORU 8: Sealed class nedir? Enum'dan farkı nedir?
+
+CEVAP:
+Sealed class sınırlı sayıda alt tipe sahip class'tır.
+When kullanıldığında tüm durumları kontrol etmeye zorlar.
+
+sealed class Result {
+    data class Success(val data: String) : Result()
+    data class Error(val message: String) : Result()
+    object Loading : Result()
+}
+
+// Kullanım
+fun handleResult(result: Result) {
+    when (result) {
+        is Result.Success -> println(result.data)
+        is Result.Error -> println(result.message)
+        Result.Loading -> println("Yükleniyor...")
+        // else gerekmez! Tüm durumlar kapsandı
+    }
+}
+
+Enum'dan farkları:
+- Enum: Sadece sabit değerler, hepsi aynı tip
+  enum class Color { RED, GREEN, BLUE }
+  
+- Sealed: Her alt sınıf farklı property'lere sahip olabilir
+  Success'te data var, Error'da message var, Loading'de hiçbiri yok
+
+Android'de kullanımı: UI State ve Event yönetimi için mükemmel
+*/
+
+/*
+SORU 9: Companion object nedir? Java'daki static ile farkı?
+
+CEVAP:
+Kotlin'de static yok, onun yerine companion object var.
+Class'ın tüm instance'larında ortak değerler/fonksiyonlar için.
+
+class VeriTabani {
+    companion object {
+        const val DB_NAME = "app.db"
+        private var instance: VeriTabani? = null
+        
+        fun getInstance(): VeriTabani {
+            if (instance == null) {
+                instance = VeriTabani()
+            }
+            return instance!!
+        }
+    }
+}
+
+// Kullanım - static gibi
+val dbName = VeriTabani.DB_NAME
+val db = VeriTabani.getInstance()
+
+Java static'ten farkları:
+1. Companion object bir nesnedir, interface implement edebilir
+2. Extension function yazılabilir
+3. Inheritance mümkün
+
+Ne zaman kullanılır:
+- Factory pattern
+- Singleton pattern  
+- Sabitler (const val)
+- Utility fonksiyonlar
+*/
+
+/*
+====================================
+4. COLLECTIONS VE OPERATORS SORULARI
+====================================
+*/
+
+/*
+SORU 10: List, Set, Map arasındaki farklar nedir?
+
+CEVAP:
+- List: Sıralı, index'li, duplicate olabilir
+  val liste = listOf("A", "B", "A")  // Duplicate OK
+  println(liste[0])  // Index erişimi
+  
+- Set: Sırasız, unique elemanlar, duplicate olamaz
+  val set = setOf("A", "B", "A")  // Sadece "A", "B" kalır
+  val varMi = "A" in set  // O(1) hızlı kontrol
+  
+- Map: Key-Value çiftleri
+  val map = mapOf("TR" to "Türkiye", "US" to "Amerika")
+  println(map["TR"])  // "Türkiye"
+
+Performans farkları:
+- List: Sıralı erişim O(1), arama O(n)
+- Set: Contains kontrolü O(1), çok hızlı
+- Map: Key ile erişim O(1), çok hızlı
+
+Ne zaman hangisi:
+- Sıralı veri -> List
+- Unique elemanlar -> Set  
+- ID/Key ile erişim -> Map
+*/
+
+/*
+SORU 11: filter, map, forEach arasındaki fark nedir?
+
+CEVAP:
+- filter: Koşula uyan elemanları seçer, yeni liste döndürür
+  val ciftler = listOf(1,2,3,4,5).filter { it % 2 == 0 }
+  // [2, 4]
+  
+- map: Her elemanı dönüştürür, yeni liste döndürür
+  val kareler = listOf(1,2,3).map { it * it }
+  // [1, 4, 9]
+  
+- forEach: Her eleman için işlem yapar, değer döndürmez
+  listOf(1,2,3).forEach { println(it) }
+  // Sadece yazdırır, sonuç yok
+
+Zincirleme kullanım:
+val sonuc = users
+    .filter { it.age >= 18 }      // Yetişkinleri seç
+    .map { it.name.uppercase() }  // İsimlerini büyük harfe çevir
+    .sorted()                      // Alfabetik sırala
+*/
+
+/*
+SORU 12: Immutable vs Mutable collections farkı nedir?
+
+CEVAP:
+- Immutable (List, Set, Map): Değiştirilemez
+  val liste = listOf(1, 2, 3)
+  // liste.add(4)  // HATA! add metodu yok
+  
+- Mutable (MutableList, MutableSet, MutableMap): Değiştirilebilir
+  val liste = mutableListOf(1, 2, 3)
+  liste.add(4)  // OK
+  liste.removeAt(0)  // OK
+
+Neden Immutable tercih edilir:
+1. Thread-safe: Birden fazla thread'den güvenli erişim
+2. State management: Compose'da recomposition için
+3. Predictable: Değişmeyeceğini bilirsiniz
+4. Functional programming: Side effect yok
+
+Android/Compose'da:
+// State değişince yeni liste oluştur
+var userList by remember { mutableStateOf(listOf<User>()) }
+userList = userList + newUser  // Yeni liste oluştur
+
+// Mutable kullanma - recomposition tetiklenmez!
+val userList = mutableListOf<User>()
+userList.add(newUser)  // Compose bunu algılamaz!
+*/
+
+/*
+====================================
+BONUS SORULAR
+====================================
+*/
+
+/*
+SORU 13: Kotlin'de == ile === farkı nedir?
+
+CEVAP:
+- == : Structural equality (içerik karşılaştırması), equals() çağırır
+- === : Referential equality (referans karşılaştırması)
+
+val a = User(1, "Ali")
+val b = User(1, "Ali")
+val c = a
+
+a == b  // true (data class'ta içerik aynı)
+a === b // false (farklı nesneler)
+a === c // true (aynı nesne referansı)
+*/
+
+/*
+SORU 14: lazy ve lateinit farkı nedir?
+
+CEVAP:
+- lazy: val için, ilk erişimde initialize olur
+  val heavyObject by lazy {
+      println("Creating...")
+      HeavyObject()  // İlk erişimde bir kez çalışır
+  }
+  
+- lateinit: var için, sonradan initialize edilecek
+  lateinit var binding: ActivityMainBinding
+  
+  override fun onCreate() {
+      binding = ActivityMainBinding.inflate(layoutInflater)
+  }
+
+lazy thread-safe, lateinit değil
+lazy val için, lateinit var için
+lazy primitive tipler için kullanılabilir, lateinit kullanılamaz
+*/

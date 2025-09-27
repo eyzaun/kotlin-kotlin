@@ -167,3 +167,4 @@ export function applyDesignLanguage(designKey) {
     root.style.setProperty(name, value);
   }
 }
+

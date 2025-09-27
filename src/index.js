@@ -15,3 +15,4 @@ root.render(
 
 // Enable PWA install prompts
 serviceWorker.register();
+

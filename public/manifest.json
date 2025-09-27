@@ -1,7 +1,7 @@
 {
-  "name": "İki Ay",
-  "short_name": "İki Ay",
-  "description": "İki Ay — Go öğrenme platformu",
+  "name": "kotlin-kotlin",
+  "short_name": "kotlin-kotlin",
+  "description": "kotlin-kotlin — Kotlin öğrenme platformu",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
@@ -17,3 +17,4 @@
   "theme_color": "#000000",
   "background_color": "#000000"
 }
+

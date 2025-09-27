@@ -1,0 +1,381 @@
+// ==================== CLASSES VE OBJECTS - DETAYLI ANLATIM ====================
+
+/*
+====================================
+KOTLIN'DE CLASS YAPISI
+====================================
+
+Class, nesnelerin blueprint'idir (planı/şablonu). Örneğin "Araba" bir class'tır,
+ama sizin park halindeki "2019 model beyaz Toyota"nız bir object'tir (nesne).
+
+Kotlin'de class'lar Java'ya göre çok daha az kod gerektirir. 
+Kotlin otomatik olarak getter/setter üretir, constructor kısadır.
+*/
+
+// En basit class tanımı
+class Araba  // Boş class bile oluşturabilirsiniz
+
+// Property'li class
+class Kullanici {
+    var ad: String = ""
+    var yas: Int = 0
+}
+
+/*
+PRIMARY CONSTRUCTOR
+Kotlin'de constructor class başlığında tanımlanır.
+Java'daki gibi ayrı bir constructor metodu yazmaya gerek yok!
+*/
+
+class Ogrenci(isim: String, sinif: Int) {
+    // isim ve sinif constructor parametreleri
+    // Bunları property yapmak için var/val eklememiz gerek
+}
+
+// Property'li primary constructor - En çok kullanılan yöntem
+class Calisan(
+    var ad: String,      // var = değiştirilebilir property
+    val tcNo: String,    // val = değiştirilemez property
+    var maas: Double
+) {
+    // Artık ad, tcNo ve maas property'leri var
+}
+
+// Kullanım:
+// val calisan = Calisan("Ali Veli", "12345678901", 15000.0)
+// println(calisan.ad)  // "Ali Veli"
+// calisan.maas = 16000.0  // var olduğu için değiştirilebilir
+// calisan.tcNo = "999"  // HATA! val olduğu için değiştirilemez
+
+/*
+====================================
+DATA CLASSES - ÇOK ÖNEMLİ!
+====================================
+
+Data class'lar veri tutmak için özel olarak tasarlanmış class'lardır.
+"data" keyword'ü eklediğinizde Kotlin otomatik olarak şunları üretir:
+- equals() ve hashCode()
+- toString() 
+- copy()
+- componentN() fonksiyonları
+
+Android'de Model class'ları her zaman data class olur!
+API'den gelen JSON'ları data class'lara map edersiniz.
+*/
+
+data class Urun(
+    val id: Int,
+    val ad: String,
+    var fiyat: Double,
+    val stok: Int
+)
+
+// Data class'ın sağladığı özellikler:
+fun dataClassOzellikleri() {
+    val urun1 = Urun(1, "Laptop", 15000.0, 10)
+    val urun2 = Urun(1, "Laptop", 15000.0, 10)
+    val urun3 = Urun(2, "Mouse", 150.0, 50)
+    
+    // 1. toString() otomatik
+    println(urun1)  
+    // Çıktı: Urun(id=1, ad=Laptop, fiyat=15000.0, stok=10)
+    // Normal class'ta: Urun@2f4d3709 gibi anlamsız çıktı verirdi
+    
+    // 2. equals() otomatik - içeriği karşılaştırır
+    println(urun1 == urun2)  // true - içerikleri aynı
+    println(urun1 == urun3)  // false - içerikleri farklı
+    
+    // 3. copy() fonksiyonu - mevcut nesneden kopyalayıp değişiklik yapma
+    val indirimliFiyat = urun1.copy(fiyat = 12000.0)
+    // Sadece fiyat değişti, diğer değerler aynı kaldı
+    println(indirimliFiyat)
+    // Çıktı: Urun(id=1, ad=Laptop, fiyat=12000.0, stok=10)
+    
+    // 4. Destructuring - komponenlere ayırma
+    val (id, ad, fiyat, stok) = urun1
+    println("Ürün adı: $ad, Fiyatı: $fiyat")
+}
+
+/*
+NEDEN DATA CLASS KULLANIRIZ?
+
+1. API Response'ları için:
+API'den gelen JSON verileri data class'lara otomatik dönüşür (Gson/Moshi ile)
+*/
+
+data class ApiUser(
+    val userId: Int,
+    val username: String,
+    val email: String,
+    val profileImage: String?  // Nullable - bazen gelmeyebilir
+)
+
+// Retrofit/API kullanımı için hazır model
+
+/*
+2. RecyclerView/LazyColumn için liste elemanları:
+*/
+
+data class ListeElemani(
+    val id: Long,
+    val baslik: String,
+    val aciklama: String,
+    val tarih: String,
+    var seciliMi: Boolean = false
+)
+
+/*
+====================================
+SEALED CLASSES - STATE YÖNETİMİ İÇİN KRİTİK!
+====================================
+
+Sealed class'lar sınırlı sayıda alt tipe sahip olabilen class'lardır.
+Enum'a benzer ama her alt tip farklı property'lere sahip olabilir.
+
+Compose ve modern Android'de State yönetimi için MUTLAKA kullanılır!
+When kullanıldığında tüm durumları kontrol etmeye zorlar - bu harika!
+*/
+
+// UI State için sealed class - Her ekranın durumları
+sealed class UiState {
+    object Loading : UiState()  // Yükleniyor - veri yok
+    data class Success(val data: List<String>) : UiState()  // Başarılı - veri var
+    data class Error(val message: String) : UiState()  // Hata - mesaj var
+    object Empty : UiState()  // Boş state - liste boş geldi
+}
+
+// Kullanım - State'e göre UI gösterme
+fun ekraniGoster(state: UiState) {
+    when (state) {
+        is UiState.Loading -> {
+            println("Yükleniyor animasyonu göster")
+        }
+        is UiState.Success -> {
+            println("Veriyi göster: ${state.data}")
+        }
+        is UiState.Error -> {
+            println("Hata mesajı göster: ${state.message}")
+        }
+        is UiState.Empty -> {
+            println("Boş liste mesajı göster")
+        }
+        // else gerekmez! Tüm durumlar kapsandı
+    }
+}
+
+/*
+SEALED CLASS - EVENT YÖNETİMİ
+Modern Android'de Event-State pattern'i için kullanılır
+*/
+
+sealed class KullaniciEvent {
+    object GeriTiklandi : KullaniciEvent()
+    data class KullaniciSecildi(val userId: Int) : KullaniciEvent()
+    data class AramayaBasladi(val query: String) : KullaniciEvent()
+    object YenileTiklandi : KullaniciEvent()
+}
+
+// ViewModel'de kullanım:
+fun handleEvent(event: KullaniciEvent) {
+    when (event) {
+        is KullaniciEvent.GeriTiklandi -> {
+            // Geri navigasyon
+        }
+        is KullaniciEvent.KullaniciSecildi -> {
+            // event.userId ile detay sayfasına git
+        }
+        is KullaniciEvent.AramayaBasladi -> {
+            // event.query ile arama yap
+        }
+        is KullaniciEvent.YenileTiklandi -> {
+            // Listeyi yenile
+        }
+    }
+}
+
+/*
+SEALED vs ENUM
+- Enum: Tüm değerler aynı tip, sadece sabit değerler
+- Sealed: Her alt sınıf farklı property'lere sahip olabilir
+
+Enum örneği:
+*/
+enum class Renk { KIRMIZI, YESIL, MAVI }
+
+// Sealed daha güçlü:
+sealed class HataType {
+    object NetworkError : HataType()
+    data class ApiError(val code: Int, val message: String) : HataType()
+    data class UnknownError(val exception: Exception) : HataType()
+}
+
+/*
+====================================
+COMPANION OBJECT - STATIC MUADILI
+====================================
+
+Kotlin'de static keyword'ü yok! Onun yerine companion object var.
+Class'ın tüm instance'larında ortak olan değerler/fonksiyonlar için kullanılır.
+
+Java'da: ClassName.staticMethod()
+Kotlin'de: ClassName.companionMethod()
+*/
+
+class VeriTabani {
+    companion object {
+        // Sabitler - tüm instance'larda aynı
+        const val DB_NAME = "kullanici_db"
+        const val DB_VERSION = 1
+        
+        // Singleton instance
+        private var INSTANCE: VeriTabani? = null
+        
+        // Factory method - nesne oluşturucu
+        fun getInstance(): VeriTabani {
+            if (INSTANCE == null) {
+                INSTANCE = VeriTabani()
+            }
+            return INSTANCE!!
+        }
+    }
+    
+    fun kaydet(veri: String) {
+        println("$veri veritabanına kaydedildi")
+    }
+}
+
+// Kullanım:
+fun companionKullanimi() {
+    // Static gibi doğrudan erişim
+    println(VeriTabani.DB_NAME)
+    
+    // Singleton pattern
+    val db = VeriTabani.getInstance()
+    db.kaydet("Test verisi")
+}
+
+/*
+COMPANION OBJECT - FACTORY PATTERN
+Nesne oluşturmak için alternatif yollar sağlar
+*/
+
+class Kullanici private constructor(
+    val id: Int,
+    val ad: String,
+    val email: String
+) {
+    companion object {
+        // Factory metodlar - farklı yollarla nesne oluşturma
+        fun emailIleOlustur(email: String): Kullanici {
+            // Email'den kullanıcı adını çıkar
+            val kullaniciAdi = email.substringBefore('@')
+            return Kullanici(
+                id = 0,
+                ad = kullaniciAdi,
+                email = email
+            )
+        }
+        
+        fun misafirOlustur(): Kullanici {
+            return Kullanici(
+                id = -1,
+                ad = "Misafir",
+                email = "misafir@temp.com"
+            )
+        }
+    }
+}
+
+// Kullanım:
+// val kullanici1 = Kullanici.emailIleOlustur("ali@gmail.com")
+// val kullanici2 = Kullanici.misafirOlustur()
+
+/*
+====================================
+OBJECT - SINGLETON
+====================================
+
+"object" keyword'ü ile singleton oluşturursunuz.
+Uygulama boyunca sadece 1 instance olur.
+
+Ne zaman kullanılır?
+- Database bağlantıları
+- Network client'lar (Retrofit instance)
+- Ayar yöneticileri
+- Logger
+*/
+
+object AyarYoneticisi {
+    private val ayarlar = mutableMapOf<String, Any>()
+    
+    fun ayarKoy(anahtar: String, deger: Any) {
+        ayarlar[anahtar] = deger
+    }
+    
+    fun ayarAl(anahtar: String): Any? {
+        return ayarlar[anahtar]
+    }
+    
+    fun tumAyarlariTemizle() {
+        ayarlar.clear()
+    }
+}
+
+// Kullanım - new keyword'ü YOK!
+fun objectKullanimi() {
+    AyarYoneticisi.ayarKoy("tema", "karanlik")
+    AyarYoneticisi.ayarKoy("dil", "TR")
+    
+    val tema = AyarYoneticisi.ayarAl("tema")
+    println("Aktif tema: $tema")
+}
+
+/*
+OBJECT EXPRESSIONS - ANONİM SINIFLAR
+Interface implementation için kullanılır (Java'daki anonymous class gibi)
+*/
+
+interface ClickListener {
+    fun onClick(view: String)
+}
+
+fun anonymousOrnek() {
+    // Java'da new ClickListener() { ... } şeklinde yazılır
+    // Kotlin'de object : ClassName şeklinde
+    
+    val listener = object : ClickListener {
+        override fun onClick(view: String) {
+            println("$view tıklandı")
+        }
+    }
+    
+    listener.onClick("Buton")
+}
+
+/*
+====================================
+ÖZET VE GERÇEK KULLANIM
+====================================
+
+1. DATA CLASS: 
+   - API modelleri (User, Product, Response)
+   - RecyclerView/LazyColumn elemanları
+   - Intent/Bundle ile veri geçişi
+
+2. SEALED CLASS:
+   - UI State (Loading, Success, Error)
+   - Navigation Events
+   - User Actions/Events
+
+3. COMPANION OBJECT:
+   - Sabitler (API_KEY, BASE_URL)
+   - Factory metodlar
+   - Static utility fonksiyonlar
+
+4. OBJECT:
+   - Singleton (Database, NetworkClient)
+   - Anonymous interface implementation
+
+Android projelerinde bunların hepsini kullanacaksınız!
+Özellikle Compose'da sealed class + data class kombinasyonu standarttır.
+*/

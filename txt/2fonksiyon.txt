@@ -1,0 +1,334 @@
+// ==================== FONKSİYONLAR VE LAMBDA - DETAYLI ANLATIM ====================
+
+/*
+====================================
+FONKSİYONLAR NEDİR VE NEDEN ÖNEMLİDİR?
+====================================
+
+Fonksiyonlar, belirli bir görevi yerine getiren kod bloklarıdır. Aynı kodu tekrar tekrar
+yazmak yerine, bir fonksiyon içine koyup istediğimiz yerde çağırırız. 
+
+Düşünün ki bir restoran uygulaması yazıyorsunuz. Her siparişte KDV hesaplamanız gerekiyor.
+Aynı hesaplama kodunu 50 yerde yazmak yerine, bir fonksiyon yazıp 50 yerde çağırırsınız.
+
+Kotlin'de fonksiyonlar "fun" kelimesiyle başlar. Java'dan farklı olarak, Kotlin'de
+fonksiyonları class dışında da yazabilirsiniz. Bu "top-level functions" denir.
+*/
+
+// En basit fonksiyon - hiç parametre almaz, değer döndürmez
+fun merhaba() {
+    println("Merhaba!")
+}
+// Çağırma: merhaba()
+
+/*
+PARAMETRE ALAN FONKSİYONLAR
+Fonksiyonlara dışarıdan veri göndermek için parametreler kullanırız.
+Parametre = fonksiyonun ihtiyaç duyduğu bilgi
+*/
+
+fun kdvHesapla(fiyat: Double) {
+    // fiyat parametresi Double tipinde olmak ZORUNDA
+    // Kotlin tip güvenliği sağlar - yanlış tip gönderemezsiniz
+    val kdv = fiyat * 0.18
+    val toplam = fiyat + kdv
+    println("Fiyat: $fiyat TL, KDV: $kdv TL, Toplam: $toplam TL")
+}
+// Kullanım: kdvHesapla(100.0)  // 100 yerine 100.0 yazmalıyız çünkü Double isteniyor
+
+/*
+DEĞER DÖNDÜREN FONKSİYONLAR
+Bazen fonksiyonun bir sonuç üretip bize geri vermesini isteriz.
+": Int" gibi dönüş tipi belirtiriz ve "return" ile değer döndürürüz.
+*/
+
+fun topla(a: Int, b: Int): Int {
+    val sonuc = a + b
+    return sonuc  // Bu değeri fonksiyonu çağıran yere gönderir
+}
+// Kullanım:
+// val toplam = topla(5, 3)  // toplam = 8 olur
+
+/*
+TEK SATIRLIK FONKSİYONLAR (Single Expression Functions)
+Eğer fonksiyonunuz tek bir işlem yapıyorsa, süslü parantez ve return yerine = kullanabilirsiniz.
+Bu Kotlin'i daha okunabilir yapar.
+*/
+
+fun carp(x: Int, y: Int): Int = x * y
+// Yukarıdaki ile aşağıdaki aynı:
+// fun carp(x: Int, y: Int): Int {
+//     return x * y  
+// }
+
+/*
+====================================
+VARSAYILAN PARAMETRELER (Default Parameters)
+====================================
+
+Java'da aynı işi farklı parametrelerle yapmak için method overloading kullanırız.
+10 tane aynı isimde metod yazarız. Kotlin'de bu karmaşaya gerek yok!
+
+Örnek: Bir kahve sipariş sistemi düşünün. Müşteri boyut belirtmezse "orta" olsun.
+*/
+
+fun kahveSiparisi(
+    tur: String = "Latte",       // Belirtilmezse Latte
+    boyut: String = "Orta",       // Belirtilmezse Orta
+    seker: Boolean = true         // Belirtilmezse şekerli
+): String {
+    var siparis = "$boyut boy $tur"
+    if (seker) siparis += " (Şekerli)" 
+    else siparis += " (Şekersiz)"
+    return siparis
+}
+
+// Kullanım örnekleri:
+// kahveSiparisi()                           // "Orta boy Latte (Şekerli)"
+// kahveSiparisi("Cappuccino")               // "Orta boy Cappuccino (Şekerli)"
+// kahveSiparisi("Espresso", "Küçük", false) // "Küçük boy Espresso (Şekersiz)"
+
+/*
+İSİMLENDİRİLMİŞ PARAMETRELER (Named Arguments)
+Parametreleri sırayla değil, isimleriyle verebilirsiniz.
+Bu özellikle çok parametreli fonksiyonlarda hayat kurtarır!
+*/
+
+fun kullaniciKayit(ad: String, soyad: String, yas: Int, sehir: String) {
+    println("$ad $soyad, $yas yaşında, $sehir şehrinde")
+}
+
+// Normal kullanım - sırayı ezberlemek zorundasınız:
+// kullaniciKayit("Ali", "Veli", 25, "İstanbul")
+
+// Named arguments - sıra önemli değil, daha okunabilir:
+// kullaniciKayit(sehir = "Ankara", ad = "Mehmet", yas = 30, soyad = "Öz")
+
+/*
+====================================
+EXTENSION FUNCTIONS - KRİTİK KONU!
+====================================
+
+Extension Functions Kotlin'in en güçlü özelliklerinden biri!
+Var olan bir class'a, o class'ın koduna dokunmadan yeni fonksiyonlar ekleyebilirsiniz.
+
+Örnek: String class'ı Java'dan geliyor ve değiştiremezsiniz. 
+Ama Kotlin'de String'e sanki kendi yazdığınız bir class'mış gibi fonksiyon ekleyebilirsiniz!
+
+Syntax: fun TipAdı.fonksiyonAdı()
+*/
+
+// String'e telefon numarası formatı ekleme
+fun String.telefonFormati(): String {
+    // this = fonksiyonu çağıran String nesnesinin kendisi
+    if (this.length != 10) return this
+    
+    // 5551234567 -> (555) 123-4567 formatına çevir
+    return "(${this.substring(0,3)}) ${this.substring(3,6)}-${this.substring(6)}"
+}
+
+// Artık HER String'de bu fonksiyon var!
+// val numara = "5551234567"
+// val formatli = numara.telefonFormati()  // "(555) 123-4567"
+
+// Int'e çift mi kontrolü ekleme
+fun Int.ciftMi(): Boolean = this % 2 == 0
+
+// val sayi = 4
+// if (sayi.ciftMi()) println("Çift")  // Sanki Int'in kendi fonksiyonuymuş gibi!
+
+/*
+NULL GÜVENLİ EXTENSION
+Nullable tipler için de extension yazabilirsiniz. 
+Compose'da sürekli kullanacaksınız!
+*/
+
+fun String?.güvenliUzunluk(): Int {
+    // this null olabilir, kontrol ediyoruz
+    return this?.length ?: 0  // null ise 0 döndür
+}
+
+// var isim: String? = null
+// println(isim.güvenliUzunluk())  // 0 - hata vermez!
+
+/*
+====================================
+HIGHER-ORDER FUNCTIONS
+====================================
+
+Higher-Order Function = Parametre olarak başka fonksiyon alan fonksiyon
+
+Android'de her yerde karşınıza çıkar:
+- Button click listeners
+- RecyclerView item clicks  
+- Network callbacks
+- Compose'daki her şey!
+
+Neden önemli? Çünkü "ne yapılacağını" değil "nasıl yapılacağını" söylersiniz.
+*/
+
+// Örnek: Bir liste üzerinde işlem yapan fonksiyon
+fun listedeIslemYap(
+    liste: List<Int>,
+    islem: (Int) -> Unit  // Bu bir fonksiyon tipi! Int alır, Unit(void) döndürür
+) {
+    for (eleman in liste) {
+        islem(eleman)  // Gelen fonksiyonu her eleman için çağır
+    }
+}
+
+// Kullanım - farklı işlemler yapabiliriz:
+val sayilar = listOf(1, 2, 3, 4, 5)
+
+// listedeIslemYap(sayilar) { sayi ->
+//     println(sayi * sayi)  // Her sayının karesini yazdır
+// }
+
+// listedeIslemYap(sayilar) { sayi ->
+//     if (sayi.ciftMi()) println(sayi)  // Sadece çiftleri yazdır
+// }
+
+/*
+====================================
+LAMBDA EXPRESSIONS
+====================================
+
+Lambda = İsimsiz fonksiyon. { } içinde yazılır.
+
+Normal fonksiyon:
+fun topla(a: Int, b: Int): Int {
+    return a + b
+}
+
+Lambda hali:
+val topla = { a: Int, b: Int -> a + b }
+
+Lambda'lar neden var?
+1. Tek kullanımlık fonksiyonlar için (button click gibi)
+2. Daha az kod yazımı
+3. Functional programming
+*/
+
+// Lambda örnekleri:
+val kareAl = { x: Int -> x * x }
+// Kullanım: val sonuc = kareAl(5)  // 25
+
+// Tek parametreli lambda'da "it" kullanabilirsiniz
+val ikiKati = { it: Int -> it * 2 }
+// Daha kısa:
+val ikiKati2: (Int) -> Int = { it * 2 }  // it otomatik Int olur
+
+/*
+TRAILING LAMBDA
+Son parametre lambda ise, parantez dışına alabilirsiniz.
+Bu Android'de çok kullanılır ve kodu daha okunabilir yapar.
+*/
+
+fun butonTiklama(text: String, tiklandi: () -> Unit) {
+    println("Buton: $text")
+    tiklandi()  // Lambda'yı çağır
+}
+
+// Normal kullanım:
+// butonTiklama("Kaydet", { println("Kaydedildi!") })
+
+// Trailing lambda - daha güzel:
+// butonTiklama("Kaydet") {
+//     println("Kaydedildi!")
+// }
+
+/*
+====================================
+SCOPE FUNCTIONS - let, run, apply, also, with
+====================================
+
+Scope functions bir nesne üzerinde geçici bir "çalışma alanı" oluşturur.
+Her birinin farklı kullanım amacı var:
+
+LET - Null kontrolü ve dönüşüm için
+- "it" ile erişirsiniz
+- Sonuç döndürür
+- ?.let ile null safety
+*/
+
+data class User(var ad: String = "", var yas: Int = 0)
+
+fun letOrnegi() {
+    val kullanici: User? = User("Ali", 25)
+    
+    // Null değilse çalış
+    kullanici?.let {
+        println("Kullanıcı adı: ${it.ad}")
+        println("Yaşı: ${it.yas}")
+        "İşlem tamamlandı"  // Bu değer döner
+    }
+}
+
+/*
+APPLY - Nesne konfigürasyonu için
+- "this" ile erişirsiniz (yazmaya gerek yok)
+- Nesnenin kendisini döndürür
+- Builder pattern için ideal
+*/
+
+fun applyOrnegi() {
+    val yeniUser = User().apply {
+        ad = "Mehmet"     // this.ad yazmaya gerek yok
+        yas = 30          // this.yas yazmaya gerek yok
+    }
+    // apply nesneyi döndürdü, yeniUser kullanıma hazır
+}
+
+/*
+RUN - Hesaplama ve dönüşüm için
+- "this" ile erişirsiniz
+- Sonuç döndürür
+*/
+
+fun runOrnegi() {
+    val user = User("Veli", 17)
+    val mesaj = user.run {
+        if (yas >= 18) "$ad reşit" 
+        else "$ad reşit değil"
+    }
+    // mesaj = "Veli reşit değil"
+}
+
+/*
+ALSO - Yan etkiler için (loglama, debug)
+- "it" ile erişirsiniz
+- Nesnenin kendisini döndürür
+*/
+
+fun alsoOrnegi() {
+    User("Can", 22)
+        .also { println("User oluşturuldu: ${it.ad}") }  // Loglama
+        .apply { yas = 23 }  // Zincirleme devam edebilir
+}
+
+/*
+WITH - Nesne üzerinde çoklu işlem
+- Extension değil, normal fonksiyon
+- "this" ile erişirsiniz
+- Sonuç döndürür
+*/
+
+fun withOrnegi() {
+    val user = User("Deniz", 28)
+    val sonuc = with(user) {
+        println(ad)
+        println(yas)
+        "Bilgiler yazdırıldı"  // Dönüş değeri
+    }
+}
+
+/*
+ÖZET KURAL:
+- Null kontrolü gerekiyorsa -> LET
+- Nesne kurulumu/ayarları -> APPLY  
+- Hesaplama/dönüşüm -> RUN
+- Loglama/debug -> ALSO
+- Çoklu işlem -> WITH
+
+Android'de en çok LET (null safety) ve APPLY (view konfigürasyonu) kullanacaksınız!
+*/

@@ -3,3 +3,4 @@ Place your PWA icons here:
 - icon-512.png
 - maskable-192.png
 - maskable-512.png
+

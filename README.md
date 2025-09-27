@@ -1,8 +1,8 @@
-# iki-ay
+# kotlin-kotlin
 
-aktif site linki: https://iki-ay.web.app/
+aktif site linki: https://kotlin-kotlin.web.app/
 
-React ile geliştirilmiş, konu anlatımları ve kişisel notlar için hazırlanmış bir çalışma uygulaması. Firebase ile kimlik doğrulama ve not kaydı, PWA desteği ve ayarlanabilir kod blokları içerir.
+React ile geliştirilmiş, Kotlin öğrenme platformu. Firebase ile kimlik doğrulama ve not kaydı, PWA desteği ve ayarlanabilir kod blokları içerir.
 
 ## Başlarken
 
@@ -19,7 +19,7 @@ Kurulum:
    npm run build
 
 ## Özellikler
-- Konu sayfaları ve hafta bazlı içerik
+- Kotlin öğrenme haftaları ve konu bazlı içerik
 - Notlar: zengin metin, kod blokları, görsel yükleme, otomatik kaydetme
 - Not penceresi: sürükle-bırak, yeniden boyutlandırma, şeffaflık ayarı, mobil uyumlu
 - Kod blokları: Prism temaları, ayarlardan tema ve yazı boyutu değiştirilebilir
@@ -35,6 +35,8 @@ Kurulum:
 
 ## Proje Yapısı
 - public: statik dosyalar ve manifest
+- src/components/konular: Kotlin öğrenme konuları
+- src/components/haftalar: Hafta overview'ları
 - src: React bileşenleri, bağlamlar ve stiller
 - tools: site haritası gibi yardımcı scriptler
 
@@ -47,3 +49,5 @@ Kurulum:
 ## Notlar
 - Kod temaları ve yazı boyutu Ayarlar sayfasından değiştirilebilir.
 - Not editöründeki kod blokları, konu sayfalarındaki ile aynı temayı kullanır.
+- Bu platform Kotlin öğrenmek için tasarlanmıştır.
+

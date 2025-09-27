@@ -1,6 +1,7 @@
 {
-  "name": "iki-ay",
+  "name": "kotlin-kotlin",
   "version": "1.0.0",
+  "description": "Kotlin öğrenme platformu - React uygulaması",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
@@ -42,3 +43,4 @@
     ]
   }
 }
+

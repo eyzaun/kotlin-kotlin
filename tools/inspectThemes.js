@@ -10,3 +10,4 @@ if (themes.vscDarkPlus) {
 } else {
   console.log('vscDarkPlus not found');
 }
+

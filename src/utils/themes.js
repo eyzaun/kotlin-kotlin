@@ -28,3 +28,4 @@ export const codeWrapperStyle = (fontSize) => ({
   lineHeight: '1.4',
   fontSize: `${fontSize}px`,
 });
+

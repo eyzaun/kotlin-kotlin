@@ -38,3 +38,4 @@ function SEO({ title, description, canonical, robots = 'index,follow', og = {}, 
 }
 
 export default SEO;
+

@@ -31,3 +31,4 @@ export const useUITheme = () => {
   if (!ctx) throw new Error('useUITheme must be used within UIThemeProvider');
   return ctx;
 };
+

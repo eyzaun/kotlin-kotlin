@@ -1,0 +1,175 @@
+// ==================== KOTLIN SYNTAX TEMELLERİ ====================
+
+// -------------------- 1. VARIABLES (DEĞİŞKENLER) --------------------
+
+/* 
+Kotlin'de değişken tanımlama 3 farklı şekilde yapılır:
+1. var: Değiştirilebilir değişken (mutable)
+2. val: Değiştirilemez değişken (immutable) 
+3. const val: Derleme zamanında bilinen sabitler
+*/
+
+// VAR - Değeri sonradan değiştirilebilir
+var yasim = 25
+// Bu değişkenin değerini istediğimiz zaman değiştirebiliriz
+yasim = 26  // Sorunsuz çalışır
+yasim = 27  // Bu da çalışır
+
+// VAL - Bir kere atandıktan sonra değiştirilemez (Java'daki final gibi)
+val isim = "Ahmet"
+// isim = "Mehmet"  // HATA! Val ile tanımlanan değişkenin değeri değiştirilemez
+
+// Neden val kullanmalıyız?
+// 1. Kod güvenliği sağlar - yanlışlıkla değiştirilmesini engeller
+// 2. Thread-safe'dir - çoklu işlemlerde güvenlidir
+// 3. Okunabilirlik artar - bu değerin değişmeyeceğini bilirsiniz
+
+// CONST VAL - Derleme zamanında bilinen sabitler için
+// Sadece primitive tipler ve String için kullanılır
+// Class'ın en üstünde veya object/companion object içinde tanımlanır
+class Sabitler {
+    companion object {
+        const val PI = 3.14159  // Matematiksel sabit
+        const val API_URL = "https://api.example.com"  // Uygulama sabiti
+    }
+}
+
+// const val ile normal val farkı:
+// const val derleme sırasında yerine konur (compile-time)
+// val çalışma zamanında atanır (runtime)
+
+
+// -------------------- 2. NULL SAFETY --------------------
+
+/*
+Kotlin'in en önemli özelliklerinden biri Null Safety'dir.
+NullPointerException hatalarını önlemek için tasarlanmıştır.
+*/
+
+// Nullable olmayan tip - null değer alamaz
+var kesinIsim: String = "Ali"
+// kesinIsim = null  // HATA! String tipine null atanamaz
+
+// Nullable tip - tip sonuna ? işareti eklenir
+var belkiIsim: String? = "Veli"
+belkiIsim = null  // Sorunsuz çalışır, çünkü String? null alabilir
+
+// Nullable değişkenlere erişim
+var kullaniciAdi: String? = "user123"
+
+// Güvenli erişim - Safe Call Operator (?.)
+// Eğer kullaniciAdi null değilse length'i al, null ise null döndür
+val uzunluk = kullaniciAdi?.length  // Sonuç: 7
+
+kullaniciAdi = null
+val uzunluk2 = kullaniciAdi?.length  // Sonuç: null (hata vermez)
+
+// Elvis Operator (?:) - null durumunda varsayılan değer
+// Sol taraf null ise sağ taraftaki değeri kullan
+val kesinUzunluk = kullaniciAdi?.length ?: 0  
+// kullaniciAdi null olduğu için sonuç: 0
+
+// Gerçek hayat örneği:
+fun kullaniciyiSelamla(isim: String?) {
+    // Eğer isim null ise "Misafir" kullan
+    val gosterilecekIsim = isim ?: "Misafir"
+    println("Hoşgeldin $gosterilecekIsim")
+}
+
+kullaniciyiSelamla("Ahmet")  // Çıktı: Hoşgeldin Ahmet
+kullaniciyiSelamla(null)     // Çıktı: Hoşgeldin Misafir
+
+// Not-null Assertion Operator (!!)
+// "Bu değişken kesinlikle null değil" demek için kullanılır
+// DİKKAT: null ise NullPointerException fırlatır!
+var sehir: String? = "İstanbul"
+val sehirUzunlugu = sehir!!.length  // 8
+// sehir = null
+// val tehlikeli = sehir!!.length  // NullPointerException!
+
+// !! operatörünü mümkün olduğunca kullanmayın!
+// Bunun yerine safe call (?.) veya elvis (?:) tercih edin
+
+
+// -------------------- 3. DATA TYPES VE TYPE INFERENCE --------------------
+
+/*
+Kotlin güçlü tip sistemine sahiptir ve tip çıkarımı (type inference) yapar.
+Yani her zaman tipi belirtmenize gerek yoktur.
+*/
+
+// Type Inference - Kotlin tipi otomatik anlar
+val otomatikSayi = 42          // Kotlin bunun Int olduğunu anlar
+val otomatikOndalik = 3.14     // Double olduğunu anlar
+val otomatikMetin = "Merhaba"  // String olduğunu anlar
+val otomatikBool = true        // Boolean olduğunu anlar
+
+// Manuel tip belirtme - Bazen açık tip belirtmek isteriz
+val kesinInt: Int = 100
+val kesinDouble: Double = 50.0
+val kesinFloat: Float = 25.5f  // f harfi Float olduğunu belirtir
+val kesinLong: Long = 1000000L // L harfi Long olduğunu belirtir
+
+// Temel Veri Tipleri:
+val byteOrnek: Byte = 127       // -128 ile 127 arası
+val shortOrnek: Short = 32000   // -32,768 ile 32,767 arası
+val intOrnek: Int = 2147483647  // Yaklaşık ±2 milyar
+val longOrnek: Long = 9223372036854775807L  // Çok büyük sayılar
+
+val floatOrnek: Float = 3.14f   // 6-7 basamak hassasiyet
+val doubleOrnek: Double = 3.14159265359  // 15-16 basamak hassasiyet
+
+val karakterOrnek: Char = 'A'   // Tek karakter
+val metinOrnek: String = "Kotlin öğreniyorum"  // Metin
+
+val dogruOrnek: Boolean = true
+val yanlisOrnek: Boolean = false
+
+// Type Conversion - Tip dönüşümleri
+// Kotlin'de otomatik tip dönüşümü yoktur, açık dönüşüm gerekir
+val intSayi: Int = 100
+// val doubleSayi: Double = intSayi  // HATA! Otomatik dönüşüm yok
+
+// Doğru kullanım - Açık dönüşüm metodları
+val doubleSayi: Double = intSayi.toDouble()
+val floatSayi: Float = intSayi.toFloat()
+val stringSayi: String = intSayi.toString()
+
+// String'den sayıya dönüşüm
+val metinSayi = "123"
+val gercekSayi = metinSayi.toInt()     // 123
+val ondalikSayi = "45.67".toDouble()   // 45.67
+
+// Güvenli dönüşüm - Hatalı dönüşümlerde null döndürür
+val hataliMetin = "abc123"
+val guvenliSayi = hataliMetin.toIntOrNull()  // null döner
+val varsayilanli = hataliMetin.toIntOrNull() ?: 0  // 0 döner
+
+// Smart Cast - Kotlin otomatik tip dönüşümü yapar
+fun akillıTipDonusumu(deger: Any) {
+    if (deger is String) {
+        // Bu blok içinde deger otomatik olarak String tipindedir
+        println("Metnin uzunluğu: ${deger.length}")
+    } else if (deger is Int) {
+        // Bu blok içinde deger otomatik olarak Int tipindedir
+        println("Sayının karesi: ${deger * deger}")
+    }
+}
+
+akillıTipDonusumu("Kotlin")  // Çıktı: Metnin uzunluğu: 6
+akillıTipDonusumu(5)         // Çıktı: Sayının karesi: 25
+
+// Any tipi - Kotlin'de her şeyin üst tipi (Java'daki Object gibi)
+val herhangiTip: Any = "Bu bir string"
+val baskaTip: Any = 123
+val dahaFarkli: Any = true
+
+// Unit tipi - Değer döndürmeyen fonksiyonlar için (Java'daki void gibi)
+fun selamVer(): Unit {  // Unit yazmasak da olur
+    println("Merhaba!")
+}
+
+// Nothing tipi - Hiçbir zaman normal şekilde sonlanmayan fonksiyonlar için
+fun hataFirlat(): Nothing {
+    throw Exception("Bu bir hata!")
+}
