@@ -20,15 +20,9 @@ import NotesWidget from "./components/notes/NotesWidget";
 const KotlinSyntaxTemelleri = React.lazy(() => import('./components/konular/kotlin-syntax-temelleri/Index'));
 const FonksiyonlarLambda = React.lazy(() => import('./components/konular/fonksiyonlar-lambda/Index'));
 const ClassesObjects = React.lazy(() => import('./components/konular/classes-objects/Index'));
-const ListSetMap = React.lazy(() => import('./components/konular/collections-operators/ListSetMap'));
-const FilterMapForEach = React.lazy(() => import('./components/konular/collections-operators/FilterMapForEach'));
-const DeclarativeUI = React.lazy(() => import('./components/konular/compose-mindset/DeclarativeUI'));
-const ComposableFunctions = React.lazy(() => import('./components/konular/compose-mindset/ComposableFunctions'));
-const Recomposition = React.lazy(() => import('./components/konular/compose-mindset/Recomposition'));
-const TextButtonTextField = React.lazy(() => import('./components/konular/temel-ui-componentleri/TextButtonTextField'));
-const Layouts = React.lazy(() => import('./components/konular/temel-ui-componentleri/Layouts'));
-const Lists = React.lazy(() => import('./components/konular/temel-ui-componentleri/Lists'));
-const Cards = React.lazy(() => import('./components/konular/temel-ui-componentleri/Cards'));
+const CollectionsOperators = React.lazy(() => import('./components/konular/collections-operators/Index'));
+const ComposeMindset = React.lazy(() => import('./components/konular/compose-mindset/Index'));
+const TemelUI = React.lazy(() => import('./components/konular/temel-ui-componentleri/Index'));
 const RememberMutableStateOf = React.lazy(() => import('./components/konular/state-management-temelleri/RememberMutableStateOf'));
 const StateHoisting = React.lazy(() => import('./components/konular/state-management-temelleri/StateHoisting'));
 const RememberSaveable = React.lazy(() => import('./components/konular/state-management-temelleri/RememberSaveable'));
@@ -121,18 +115,12 @@ function App() {
           <Route path="/fonksiyonlar-lambda" element={<React.Suspense fallback={<div>Loading...</div>}><FonksiyonlarLambda /></React.Suspense>} />
           {/* Classes ve Objects (tek sayfa) */}
           <Route path="/classes-objects" element={<React.Suspense fallback={<div>Loading...</div>}><ClassesObjects /></React.Suspense>} />
-          {/* Collections ve Operators */}
-          <Route path="/listsetmap" element={<React.Suspense fallback={<div>Loading...</div>}><ListSetMap /></React.Suspense>} />
-          <Route path="/filtermapforeach" element={<React.Suspense fallback={<div>Loading...</div>}><FilterMapForEach /></React.Suspense>} />
-          {/* Compose Mindset */}
-          <Route path="/declarativeui" element={<React.Suspense fallback={<div>Loading...</div>}><DeclarativeUI /></React.Suspense>} />
-          <Route path="/composablefunctions" element={<React.Suspense fallback={<div>Loading...</div>}><ComposableFunctions /></React.Suspense>} />
-          <Route path="/recomposition" element={<React.Suspense fallback={<div>Loading...</div>}><Recomposition /></React.Suspense>} />
-          {/* Temel UI Componentleri */}
-          <Route path="/textbuttontextfield" element={<React.Suspense fallback={<div>Loading...</div>}><TextButtonTextField /></React.Suspense>} />
-          <Route path="/layouts" element={<React.Suspense fallback={<div>Loading...</div>}><Layouts /></React.Suspense>} />
-          <Route path="/lists" element={<React.Suspense fallback={<div>Loading...</div>}><Lists /></React.Suspense>} />
-          <Route path="/cards" element={<React.Suspense fallback={<div>Loading...</div>}><Cards /></React.Suspense>} />
+          {/* Collections ve Operators (tek sayfa) */}
+          <Route path="/collections-operators" element={<React.Suspense fallback={<div>Loading...</div>}><CollectionsOperators /></React.Suspense>} />
+          {/* Compose Mindset (tek sayfa) */}
+          <Route path="/compose-mindset" element={<React.Suspense fallback={<div>Loading...</div>}><ComposeMindset /></React.Suspense>} />
+          {/* Temel UI Componentleri (tek sayfa) */}
+          <Route path="/temel-ui-componentleri" element={<React.Suspense fallback={<div>Loading...</div>}><TemelUI /></React.Suspense>} />
           {/* State Management Temelleri */}
           <Route path="/remembermutablestateof" element={<React.Suspense fallback={<div>Loading...</div>}><RememberMutableStateOf /></React.Suspense>} />
           <Route path="/statehoisting" element={<React.Suspense fallback={<div>Loading...</div>}><StateHoisting /></React.Suspense>} />

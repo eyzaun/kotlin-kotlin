@@ -16,12 +16,12 @@ const routes = [
   '/fonksiyonlar-lambda',
   // Classes ve Objects (tek sayfa)
   '/classes-objects',
-  // Collections ve Operators
-  '/listsetmap','/filtermapforeach',
-  // Compose Mindset
-  '/declarativeui','/composablefunctions','/recomposition',
-  // Temel UI Componentleri
-  '/textbuttontextfield','/layouts','/lists','/cards',
+  // Collections ve Operators (tek sayfa)
+  '/collections-operators',
+  // Compose Mindset (tek sayfa)
+  '/compose-mindset',
+  // Temel UI Componentleri (tek sayfa)
+  '/temel-ui-componentleri',
   // State Management Temelleri
   '/remembermutablestateof','/statehoisting','/remembersaveable','/derivedstateof',
   // Modifier Sistemi
