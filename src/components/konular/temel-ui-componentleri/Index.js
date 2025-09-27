@@ -396,7 +396,7 @@ fun UserCard(user: User) {
 
       <div className="navigation-links">
         <Link to="/compose-mindset" className="nav-button">Compose Mindset</Link>
-        <Link to="/remembermutablestateof" className="nav-button">State Management Temelleri</Link>
+                <Link to="/state-management-temelleri" className="nav-button">State Management Temelleri</Link>
       </div>
     </TopicLayout>
   );
